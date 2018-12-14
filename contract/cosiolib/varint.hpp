@@ -1,9 +1,6 @@
-/**
- *  @file
- *  @copyright defined in contentos/LICENSE.txt
- */
 #pragma once
 
+namespace cosio {
 
 /**
  * @defgroup varint Variable Length Integer
@@ -126,4 +123,4 @@ struct signed_int {
     }
 };
 
-/// @}
+}

@@ -1,11 +1,8 @@
-/**
- *  @file datastream.hpp
- *  @copyright defined in contentos/LICENSE.txt
- */
 #pragma once
-#include "system.h"
+
 #include "types.hpp"
 #include "varint.hpp"
+#include "assert.hpp"
 #include <boost/container/flat_set.hpp>
 #include <boost/container/flat_map.hpp>
 #include <array>
@@ -42,7 +39,7 @@ class datastream {
       *  @param s the number of bytes to read
       */
       inline bool read( char* d, size_t s ) {
-        cos_assert( size_t(_end - _pos) >= (size_t)s, "read" );
+        cosio_assert( size_t(_end - _pos) >= (size_t)s, "read" );
         memcpy( d, _pos, s );
         _pos += s;
         return true;
@@ -55,7 +52,7 @@ class datastream {
       *  @param s The number of bytes to write
       */
       inline bool write( const char* d, size_t s ) {
-        cos_assert( _end - _pos >= (int32_t)s, "write" );
+        cosio_assert( _end - _pos >= (int32_t)s, "write" );
         memcpy( (void*)_pos, d, s );
         _pos += s;
         return true;
@@ -67,7 +64,7 @@ class datastream {
       *  @param c byte to write
       */
       inline bool put(char c) {
-        cos_assert( _pos < _end, "put" );
+        cosio_assert( _pos < _end, "put" );
         *_pos = c;
         ++_pos;
         return true;
@@ -81,7 +78,7 @@ class datastream {
       inline bool get( unsigned char& c ) { return get( *(char*)&c ); }
       inline bool get( char& c )
       {
-        cos_assert( _pos < _end, "get" );
+        cosio_assert( _pos < _end, "get" );
         c = *_pos;
         ++_pos;
         return true;
@@ -158,7 +155,7 @@ inline datastream<Stream>& operator>>(datastream<Stream>& ds, bool& d) {
  *  @param d value to serialize
  */
 template<typename Stream>
-    inline datastream<Stream>& operator<<(datastream<Stream>& ds, const coslib::checksum256& d) {
+    inline datastream<Stream>& operator<<(datastream<Stream>& ds, const cosio::checksum256& d) {
    ds.write( (const char*)&d.hash[0], sizeof(d.hash) );
    return ds;
 }
@@ -169,7 +166,7 @@ template<typename Stream>
  *  @param d destination for deserialized value
  */
 template<typename Stream>
-inline datastream<Stream>& operator>>(datastream<Stream>& ds, coslib::checksum256& d) {
+inline datastream<Stream>& operator>>(datastream<Stream>& ds, cosio::checksum256& d) {
    ds.read((char*)&d.hash[0], sizeof(d.hash) );
    return ds;
 }
@@ -252,7 +249,7 @@ template<typename DataStream, typename T, std::size_t N,
 DataStream& operator >> ( DataStream& ds, T (&v)[N] ) {
    unsigned_int s;
    ds >> s;
-   cos_assert( N == s.value, "T[] size and unpacked size don't match");
+   cosio_assert( N == s.value, "T[] size and unpacked size don't match");
    for( uint32_t i = 0; i < N; ++i )
       ds >> v[i];
    return ds;
@@ -263,7 +260,7 @@ template<typename DataStream, typename T, std::size_t N,
 DataStream& operator >> ( DataStream& ds, T (&v)[N] ) {
    unsigned_int s;
    ds >> s;
-   cos_assert( N == s.value, "T[] size and unpacked size don't match");
+   cosio_assert( N == s.value, "T[] size and unpacked size don't match");
    ds.read((char*)&v[0], sizeof(v));
    return ds;
 }
@@ -454,8 +451,8 @@ size_t pack_size( const T& value ) {
 }
 
 template<typename T>
-coslib::bytes pack( const T& value ) {
-  coslib::bytes result;
+cosio::bytes pack( const T& value ) {
+  cosio::bytes result;
   result.resize(pack_size(value));
 
   datastream<char*> ds( result.data(), result.size() );
@@ -464,25 +461,25 @@ coslib::bytes pack( const T& value ) {
 }
 
 template<typename Stream>
-    inline datastream<Stream>& operator<<(datastream<Stream>& ds, const coslib::checksum160& cs) {
+    inline datastream<Stream>& operator<<(datastream<Stream>& ds, const cosio::checksum160& cs) {
    ds.write((const char*)&cs.hash[0], sizeof(cs.hash));
    return ds;
 }
 
 template<typename Stream>
-inline datastream<Stream>& operator>>(datastream<Stream>& ds, coslib::checksum160& cs) {
+inline datastream<Stream>& operator>>(datastream<Stream>& ds, cosio::checksum160& cs) {
    ds.read((char*)&cs.hash[0], sizeof(cs.hash));
    return ds;
 }
 
 template<typename Stream>
-inline datastream<Stream>& operator<<(datastream<Stream>& ds, const coslib::checksum512& cs) {
+inline datastream<Stream>& operator<<(datastream<Stream>& ds, const cosio::checksum512& cs) {
    ds.write((const char*)&cs.hash[0], sizeof(cs.hash));
    return ds;
 }
 
 template<typename Stream>
-inline datastream<Stream>& operator>>(datastream<Stream>& ds, coslib::checksum512& cs) {
+inline datastream<Stream>& operator>>(datastream<Stream>& ds, cosio::checksum512& cs) {
    ds.read((char*)&cs.hash[0], sizeof(cs.hash));
    return ds;
 }

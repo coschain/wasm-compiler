@@ -6,7 +6,7 @@
 /* macro to align/overalign a type to ensure calls to intrinsics with pointers/references are properly aligned */
 #define ALIGNED(X) __attribute__ ((aligned (16))) X
 
-namespace coslib {
+namespace cosio {
     using account_name = std::string;
     
     struct ALIGNED(checksum256) {
