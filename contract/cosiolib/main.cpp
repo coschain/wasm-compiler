@@ -1,5 +1,5 @@
 #include "serialize.hpp"
-#include "datastream.hpp"
+#include "storage.hpp"
 #include <iostream>
 
 struct foo {
@@ -9,10 +9,16 @@ struct foo {
     COSLIB_SERIALIZE( foo, (x)(y)(s) )
 };
 
-int main() {
-    foo f = {10, 20, "hello"};
-    auto data = cosio::pack(f);
-    auto f2 = cosio::unpack<foo>(data);
+struct bar : public foo {
+    float a, b;
     
-    std::cout << data.size() << "\n";
+    COSLIB_SERIALIZE_DERIVED(bar, foo, (a)(b))
+};
+
+int main() {
+    auto s = cosio::storage();
+    
+    s["alice"] = foo{10, 20, "hello, alice"};
+    foo f = s["alice"];
+    return 0;
 }

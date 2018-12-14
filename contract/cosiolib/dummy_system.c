@@ -46,8 +46,8 @@ void save_to_storage(char* key, int key_size, char* value, int value_size) {
     
 }
 
-void read_from_storage(char* key, int key_size, char* value, int value_size) {
-    
+int read_from_storage(char* key, int key_size, char* value, int value_size) {
+    return 0;
 }
 
 void log_sort(unsigned int event_id, char* key, int key_size, char* sec_key, int sec_key_size) {

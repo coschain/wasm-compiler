@@ -26,7 +26,7 @@ extern "C" {
     
     void save_to_storage(char*, int, char*, int);
     
-    void read_from_storage(char*, int, char*, int);
+    int read_from_storage(char*, int, char*, int);
     
     void log_sort(unsigned int, char*, int, char*, int);
     
