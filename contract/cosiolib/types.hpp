@@ -8,6 +8,7 @@
 
 namespace cosio {
     using account_name = std::string;
+    using method_name = std::string;
     
     struct ALIGNED(checksum256) {
         uint8_t hash[32];
@@ -23,3 +24,6 @@ namespace cosio {
     
     using bytes = std::vector<char>;
 }
+
+#define COSIO_MAX_ACCOUNT_NAME_SIZE     16
+#define COSIO_MAX_METHOD_NAME_SIZE      128

@@ -58,11 +58,15 @@ void cos_assert(int pred, char* msg) {
     
 }
 
-void read_contract_op_params(char*method, int method_size, char* params, int params_size) {
+void read_contract_op_params(char* params, int params_size) {
     
 }
 int    read_contract_op_params_length()  {
     return 0;
+}
+
+void read_contract_method(char*method, int method_size) {
+    
 }
 
 void read_contract_owner(char*owner, int owner_size) {

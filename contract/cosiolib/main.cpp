@@ -1,5 +1,6 @@
 #include "serialize.hpp"
 #include "storage.hpp"
+#include "contract.hpp"
 #include <iostream>
 
 struct foo {
@@ -14,6 +15,23 @@ struct bar : public foo {
     
     COSLIB_SERIALIZE_DERIVED(bar, foo, (a)(b))
 };
+
+class demo_contract : public cosio::contract {
+public:
+    demo_contract(const cosio::account_name& owner, const cosio::account_name& caller): cosio::contract(owner, caller) {
+        
+    }
+    void add(int32_t x, int32_t y) {
+        
+    }
+    void donate(cosio::account_name& whom, uint32_t value) {
+        
+    }
+    int sub(int32_t x, int32_t y) {
+        return 0;
+    }
+};
+COSIO_ABI( demo_contract, (add)(donate) )
 
 int main() {
     auto s = cosio::storage();
