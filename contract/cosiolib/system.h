@@ -13,10 +13,10 @@ extern "C" {
     void sha256(char*, int, char*, int);
     
     void print_str(char*);
+    void print_str_l(char *, int);
+    void print_int(long long);
+    void print_uint(unsigned long long);
     
-    void print_uint32(unsigned int);
-    void print_uint64(unsigned long long);
-    void print_bool(unsigned int);
     
     void require_auth(char*);
     

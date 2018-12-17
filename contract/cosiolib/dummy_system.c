@@ -16,17 +16,16 @@ void sha256(char*data, int size, char*checksum, int checksum_len) {
     
 }
 
-void print_str(char* s) {
+void print_str(char*s) {
     
 }
-
-void print_uint32(unsigned int v) {
+void print_str_l(char *s, int len) {
     
 }
-void print_uint64(unsigned long long v) {
+void print_int(long long) {
     
 }
-void print_bool(unsigned int b) {
+void print_uint(unsigned long long) {
     
 }
 
