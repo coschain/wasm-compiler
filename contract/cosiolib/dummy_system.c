@@ -22,10 +22,10 @@ void print_str(char*s) {
 void print_str_l(char *s, int len) {
     
 }
-void print_int(long long) {
+void print_int(long long n) {
     
 }
-void print_uint(unsigned long long) {
+void print_uint(unsigned long long n) {
     
 }
 
@@ -62,6 +62,10 @@ void read_contract_op_params(char* params, int params_size) {
 }
 int    read_contract_op_params_length()  {
     return 0;
+}
+
+void read_contract_name(char*name, int name_size) {
+    
 }
 
 void read_contract_method(char*method, int method_size) {

@@ -8,7 +8,10 @@
 
 namespace cosio {
     using account_name = std::string;
+    using contract_name = std::string;
     using method_name = std::string;
+    
+    using coin_amount = uint64_t;
     
     struct ALIGNED(checksum256) {
         uint8_t hash[32];
@@ -26,4 +29,5 @@ namespace cosio {
 }
 
 #define COSIO_MAX_ACCOUNT_NAME_SIZE     16
+#define COSIO_MAX_CONTRACT_NAME_SIZE    128
 #define COSIO_MAX_METHOD_NAME_SIZE      128

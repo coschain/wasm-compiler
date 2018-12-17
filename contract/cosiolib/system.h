@@ -35,6 +35,7 @@ extern "C" {
     void read_contract_op_params(char*, int);
     int    read_contract_op_params_length();
     
+    void read_contract_name(char*, int);
     void read_contract_method(char*, int);
     void read_contract_owner(char*, int);
     void read_contract_caller(char*, int);

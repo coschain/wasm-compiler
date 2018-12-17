@@ -18,7 +18,7 @@ struct bar : public foo {
 
 class demo_contract : public cosio::contract {
 public:
-    demo_contract(const cosio::account_name& owner, const cosio::account_name& caller): cosio::contract(owner, caller) {
+    demo_contract(const cosio::account_name& owner, const cosio::contract_name& name, const cosio::account_name& caller): cosio::contract(owner, name, caller) {
         
     }
     void add(int32_t x, int32_t y) {
