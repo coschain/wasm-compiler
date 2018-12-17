@@ -3,6 +3,7 @@
 #include "types.hpp"
 #include "assert.hpp"
 #include "system.h"
+#include "datastream.hpp"
 #include <type_traits>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
