@@ -192,6 +192,7 @@ DataStream& operator >> ( DataStream& ds, std::string& v ) {
 
 template<typename DataStream, typename T, std::size_t N>
 DataStream& operator << ( DataStream& ds, const std::array<T,N>& v ) {
+   ds << unsigned_int( N );
    for( const auto& i : v )
       ds << i;
    return ds;
@@ -199,6 +200,9 @@ DataStream& operator << ( DataStream& ds, const std::array<T,N>& v ) {
 
 template<typename DataStream, typename T, std::size_t N>
 DataStream& operator >> ( DataStream& ds, std::array<T,N>& v ) {
+   unsigned_int s;
+   ds >> s;
+   cosio_assert( N == s.value, "std::array size and unpacked size don't match");
    for( auto& i : v )
       ds >> i;
    return ds;
@@ -388,6 +392,7 @@ DataStream& operator>>( DataStream& ds, boost::container::flat_map<K,V>& m ) {
 
 template<typename DataStream, typename... Args>
 DataStream& operator<<( DataStream& ds, const std::tuple<Args...>& t ) {
+   ds << unsigned_int( sizeof...(Args) );
    boost::fusion::for_each( t, [&]( const auto& i ) {
        ds << i;
    });
@@ -396,6 +401,9 @@ DataStream& operator<<( DataStream& ds, const std::tuple<Args...>& t ) {
 
 template<typename DataStream, typename... Args>
 DataStream& operator>>( DataStream& ds, std::tuple<Args...>& t ) {
+   unsigned_int s;
+   ds >> s;
+   cosio_assert( sizeof...(Args) == s.value, "std::tuple size and unpacked size don't match");
    boost::fusion::for_each( t, [&]( auto& i ) {
        ds >> i;
    });
