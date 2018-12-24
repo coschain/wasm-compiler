@@ -101,16 +101,50 @@ extern "C" {
      if @p value_size is zero or negative, return the actual length of value without changing @p value.
      */
     int read_from_storage(char* key, int key_size, char* value, int value_size);
+
+    /**
+     Query a record in a database table.
+     @param[in] table_name name of the table.
+     @param[in] table_name_length length of @p table_name.
+     @param[in] primary the primary key for query.
+     @param[in] primary_len length of @p primary.
+     @param[in,out] value the buffer to which record data are stored.
+     @param[in] value_len capacity of @p value, in bytes
+     @return if @p value_len is positive, return the number of bytes written in @p value.
+     if @p value_len is zero or negative, return the size of value.
+     */
+    int table_get_record(char *table_name, int table_name_len, char* primary, int primary_len, char* value, int value_len);
     
     /**
-     Notify the host a table data change.
-     @param[in] deletion indicates whether we're deleting a record.
-     @param[in] primary the primary key of changing record.
-     @param[in] primary_len the length of @p primary.
-     @param[in] value data of the record after the change.
-     @param[in] value_len the length of @p value.
+     Create a record in a database table.
+     @param[in] table_name name of the table.
+     @param[in] table_name_length length of @p table_name.
+     @param[in] primary the primary key of new record.
+     @param[in] primary_len length of @p primary.
+     @param[in] value the record value.
+     @param[in] value_len length of @p value.
      */
-    void table_changed(int deletion, char* primary, int primary_len, char* value, int value_len);
+    void table_new_record(char *table_name, int table_name_len, char* primary, int primary_len, char* value, int value_len);
+    
+    /**
+     Update a record in a database table.
+     @param[in] table_name name of the table.
+     @param[in] table_name_length length of @p table_name.
+     @param[in] primary the primary key of the record.
+     @param[in] primary_len length of @p primary.
+     @param[in] value the updated record value.
+     @param[in] value_len length of @p value.
+     */
+    void table_update_record(char *table_name, int table_name_len, char* primary, int primary_len, char* value, int value_len);
+    
+    /**
+     Delete a record in a database table.
+     @param[in] table_name name of the table.
+     @param[in] table_name_length length of @p table_name.
+     @param[in] primary the primary key of the record.
+     @param[in] primary_len length of @p primary.
+     */
+    void table_delete_record(char *table_name, int table_name_len, char* primary, int primary_len);
     
     /**
      Assert function
