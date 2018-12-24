@@ -31,6 +31,7 @@ extern "C" {
     void log_sort(unsigned int, char*, int, char*, int);
     
     void cos_assert(int, char* );
+    void abort();
     
     void read_contract_op_params(char*, int);
     int    read_contract_op_params_length();
