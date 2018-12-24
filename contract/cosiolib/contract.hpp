@@ -43,20 +43,20 @@ namespace cosio {
     
     inline bytes get_contract_args() {
         bytes args;
-        int min_size = ::read_contract_op_params_length();
+        int min_size = ::read_contract_op_params(nullptr, 0)
         if (min_size > 0) {
             args.reserve(min_size);
+            ::read_contract_op_params(args.data(), min_size);
         }
-        ::read_contract_op_params(args.data(), (int)args.size());
         return args;
     }
     
     inline coin_amount get_contract_balance(account_name owner, contract_name contract) {
-        return ::get_contract_balance((char*)owner.c_str(), (char*)contract.c_str());
+        return ::get_contract_balance((char*)owner.c_str(), (int)owner.size(), (char*)contract.c_str(), (int)contract.size());
     }
     
     inline coin_amount get_contract_sender_value() {
-        return ::get_sender_value();
+        return ::read_contract_sender_value();
     }
     
     ///////////////////////

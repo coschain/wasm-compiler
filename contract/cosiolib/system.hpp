@@ -27,15 +27,15 @@ namespace cosio {
     }
     
     inline void require_auth(const account_name& name) {
-        return ::require_auth((char*)name.c_str());
+        return ::require_auth((char*)name.c_str(), (int)name.size());
     }
     
     inline coin_amount get_balance_by_name(const account_name& name) {
-        return ::get_balance_by_name((char*)name.c_str());
+        return ::get_balance_by_name((char*)name.c_str(), (int)name.size());
     }
     
     inline void transfer(const account_name& from, const account_name& to, coin_amount amount, const std::string& memo) {
-        ::transfer((char*)from.c_str(), (char*)to.c_str(), amount, (char*)memo.c_str());
+        ::transfer((char*)from.c_str(), (int)from.size(), (char*)to.c_str(), (int)to.size(), amount, (char*)memo.c_str(), (int)memo.size());
     }
 
 }

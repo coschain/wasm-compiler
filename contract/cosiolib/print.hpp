@@ -7,16 +7,16 @@
 
 namespace cosio {
     
-    inline void print(const char *s) {
-        ::print_str((char*)s);
-    }
-    
     inline void prints_l(const char *s, size_t len) {
-        ::print_str_l((char*)s, (int)len);
+        ::print_str((char*)s, (int)len);
     }
     
     inline void print(const std::string& str) {
         prints_l(str.c_str(), str.size());
+    }
+    
+    inline void print(const char *s) {
+        ::print_str(std::string(s));
     }
     
     inline void print(std::string& str) {
