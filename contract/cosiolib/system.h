@@ -119,12 +119,10 @@ extern "C" {
      Create a record in a database table.
      @param[in] table_name name of the table.
      @param[in] table_name_length length of @p table_name.
-     @param[in] primary the primary key of new record.
-     @param[in] primary_len length of @p primary.
      @param[in] value the record value.
      @param[in] value_len length of @p value.
      */
-    void table_new_record(char *table_name, int table_name_len, char* primary, int primary_len, char* value, int value_len);
+    void table_new_record(char *table_name, int table_name_len, char* value, int value_len);
     
     /**
      Update a record in a database table.
