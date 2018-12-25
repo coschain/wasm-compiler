@@ -12,30 +12,35 @@
 #define COSLIB_SERIALIZE( TYPE,  MEMBERS ) \
  template<typename DataStream> \
  friend DataStream& operator << ( DataStream& ds, const TYPE& t ){ \
-    ds << unsigned_int( BOOST_PP_SEQ_SIZE( MEMBERS ) ); \
+    ds << cosio::unsigned_int( BOOST_PP_SEQ_SIZE( MEMBERS ) ); \
     return ds BOOST_PP_SEQ_FOR_EACH( COSLIB_REFLECT_MEMBER_OP, <<, MEMBERS );\
  }\
  template<typename DataStream> \
  friend DataStream& operator >> ( DataStream& ds, TYPE& t ){ \
-    unsigned_int s; \
+    cosio::unsigned_int s; \
     ds >> s; \
     cosio::cosio_assert( BOOST_PP_SEQ_SIZE( MEMBERS ) == s.value, "unpacking " BOOST_PP_STRINGIZE(TYPE) ": field count mismatched."); \
     return ds BOOST_PP_SEQ_FOR_EACH( COSLIB_REFLECT_MEMBER_OP, >>, MEMBERS );\
- }
+ } \
+public:\
+static const char* _cosio_type_name() { return BOOST_PP_STRINGIZE(TYPE); }
 
 
 #define COSLIB_SERIALIZE_DERIVED( TYPE, BASE, MEMBERS ) \
  template<typename DataStream> \
  friend DataStream& operator << ( DataStream& ds, const TYPE& t ){ \
-    ds << unsigned_int( BOOST_PP_SEQ_SIZE( MEMBERS ) + 1 ); \
+    ds << cosio::unsigned_int( BOOST_PP_SEQ_SIZE( MEMBERS ) + 1 ); \
     ds << static_cast<const BASE&>(t); \
     return ds BOOST_PP_SEQ_FOR_EACH( COSLIB_REFLECT_MEMBER_OP, <<, MEMBERS );\
  }\
  template<typename DataStream> \
  friend DataStream& operator >> ( DataStream& ds, TYPE& t ){ \
-    unsigned_int s; \
+    cosio::unsigned_int s; \
     ds >> s; \
     cosio::cosio_assert( BOOST_PP_SEQ_SIZE( MEMBERS ) + 1 == s.value, "unpacking " BOOST_PP_STRINGIZE(TYPE) ":field count mismatched."); \
     ds >> static_cast<BASE&>(t); \
     return ds BOOST_PP_SEQ_FOR_EACH( COSLIB_REFLECT_MEMBER_OP, >>, MEMBERS );\
- }
+ } \
+public:\
+static const char* _cosio_type_name() { return BOOST_PP_STRINGIZE(TYPE); }
+

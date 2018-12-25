@@ -3,7 +3,9 @@
 #include "types.hpp"
 #include "assert.hpp"
 #include "system.h"
+#include "serialize.hpp"
 #include "datastream.hpp"
+#include "table.hpp"
 #include <type_traits>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
@@ -43,7 +45,7 @@ namespace cosio {
     
     inline bytes get_contract_args() {
         bytes args;
-        int min_size = ::read_contract_op_params(nullptr, 0)
+        int min_size = ::read_contract_op_params(nullptr, 0);
         if (min_size > 0) {
             args.reserve(min_size);
             ::read_contract_op_params(args.data(), min_size);
