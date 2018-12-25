@@ -64,7 +64,7 @@ namespace cosio {
         void insert(Modifier m) {
             Record r;
             m(r);
-            table_insert(pack(r));
+            table_insert(record_type_name(), pack(r));
         }
         
         template<typename Modifier>
