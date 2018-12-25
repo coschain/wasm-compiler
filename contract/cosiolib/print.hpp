@@ -16,7 +16,7 @@ namespace cosio {
     }
     
     inline void print(const char *s) {
-        ::print_str(std::string(s));
+        print(std::string(s));
     }
     
     inline void print(std::string& str) {
