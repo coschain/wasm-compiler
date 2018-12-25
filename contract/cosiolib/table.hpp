@@ -60,6 +60,20 @@ namespace cosio {
             return unpack<Record>(enc);
         }
         
+        Record get_or_default(const Primary& key, const Record& def = Record()) {
+            return has(key)? get(key) : def;
+        }
+        
+        Record get_or_create(const Primary& key, const Record& def = Record()) {
+            if (has(key)) {
+                return get(key);
+            }
+            insert([&](Record& r) {
+                r = def;
+            });
+            return def;
+        }
+        
         template<typename Modifier>
         void insert(Modifier m) {
             Record r;
