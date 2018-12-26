@@ -212,15 +212,13 @@ extern "C" {
 
     /**
      Transfer coins
-     @param[in] from account name of payer.
-     @param[in] from_len length of @p from.
      @param[in] to account name of receiver.
      @param[in] to_len length of @p to.
      @param[in] amount number of coins to transfer.
      @param[in] memo a memo string.
      @param[in] memo_len length of @p memo.
      */
-    void transfer( char* from, int from_len, char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
+    void transfer( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
     
     
 #ifdef __cplusplus
