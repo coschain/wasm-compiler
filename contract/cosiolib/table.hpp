@@ -102,7 +102,7 @@ namespace cosio {
 #define _COSIO_TABLE(RECORD, INDICES) cosio::table<RECORD, _COSIO_MEMBER_TYPE(&(RECORD::BOOST_PP_SEQ_ELEM(0, INDICES)))>
 
 #define COSIO_NAMED_TABLE(NAME, RECORD, INDICES) \
-struct BOOST_PP_SEQ_CAT((__cosio_table_)(RECORD)(__COUNTER__)): public _COSIO_TABLE(RECORD, INDICES) {\
+struct BOOST_PP_SEQ_CAT((__cosio_table_)(__COUNTER__)): public _COSIO_TABLE(RECORD, INDICES) {\
     std::string name() { return NAME; }\
 }
 
