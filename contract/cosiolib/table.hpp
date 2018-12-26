@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/preprocessor/seq/seq.hpp>
+#include <boost/preprocessor/seq/cat.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include "types.hpp"
 #include "system.hpp"
@@ -46,17 +47,17 @@ namespace cosio {
     template<typename Record, typename Primary>
     class table {
     public:
-        static const char* record_type_name() {
+        virtual std::string name() {
             return Record::_cosio_type_name();
         }
         
         bool has(const Primary& key) {
-            return table_has(record_type_name(), pack(key));
+            return table_has(name(), pack(key));
         }
         
         Record get(const Primary& key) {
             bytes enc;
-            table_get(record_type_name(), pack(key), enc);
+            table_get(name(), pack(key), enc);
             return unpack<Record>(enc);
         }
         
@@ -78,18 +79,18 @@ namespace cosio {
         void insert(Modifier m) {
             Record r;
             m(r);
-            table_insert(record_type_name(), pack(r));
+            table_insert(name(), pack(r));
         }
         
         template<typename Modifier>
         void update(const Primary& key, Modifier m) {
             Record r = get(key);
             m(r);
-            table_update(record_type_name(), pack(key), pack(r));
+            table_update(name(), pack(key), pack(r));
         }
         
         void remove(const Primary& key) {
-            table_delete(record_type_name(), pack(key));
+            table_delete(name(), pack(key));
         }
     };
     
@@ -98,5 +99,13 @@ namespace cosio {
 
 #define _COSIO_MEMBER_TYPE(m) decltype(cosio::get_member_type(m))
 
-#define COSIO_DEFINE_TABLE(VARNAME, RECORD, INDICES)  cosio::table<RECORD, _COSIO_MEMBER_TYPE(&(RECORD::BOOST_PP_SEQ_ELEM(0, INDICES)))> VARNAME
+#define _COSIO_TABLE(RECORD, INDICES) cosio::table<RECORD, _COSIO_MEMBER_TYPE(&(RECORD::BOOST_PP_SEQ_ELEM(0, INDICES)))>
 
+#define COSIO_NAMED_TABLE(NAME, RECORD, INDICES) \
+struct BOOST_PP_SEQ_CAT((__cosio_table_)(RECORD)(__COUNTER__)): public _COSIO_TABLE(RECORD, INDICES) {\
+    std::string name() { return NAME; }\
+}
+
+#define COSIO_DEFINE_TABLE(VARNAME, RECORD, INDICES)  COSIO_NAMED_TABLE(BOOST_PP_STRINGIZE(VARNAME), RECORD, INDICES) VARNAME
+
+#define COSIO_DEFINE_NAMED_TABLE(VARNAME, NAME, RECORD, INDICES)  COSIO_NAMED_TABLE(NAME, RECORD, INDICES) VARNAME

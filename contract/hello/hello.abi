@@ -1,7 +1,10 @@
 {
     "version":"cosio::abi/1.0",
     "types":[
-
+        {
+            "new_type_name":"timestamp_t",
+            "type":"uint64"
+        }
     ],
     "structs":[
         {
@@ -18,7 +21,7 @@
                 },
                 {
                     "name":"last_seen",
-                    "type":"uint64"
+                    "type":"timestamp_t"
                 }
             ]
         },
@@ -47,6 +50,14 @@
             "secondary":[
                 "count",
                 "last_seen"
+            ]
+        },
+        {
+            "name":"hello",
+            "type":"greeting",
+            "primary":"name",
+            "secondary":[
+
             ]
         }
     ]
