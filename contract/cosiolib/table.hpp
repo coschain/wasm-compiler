@@ -101,43 +101,6 @@ namespace cosio {
         }
     };
     
-    template<typename Record, typename NameProvider = record_type_name<Record> >
-    class singleton {
-        using key_type = int32_t;
-        using table_type = table<Record, key_type, NameProvider>;
-        
-        static constexpr key_type the_key = 1;
-        
-    public:
-        bool exists() {
-            return _table.has(the_key);
-        }
-        
-        Record get() {
-            return _table.get(the_key);
-        }
-        
-        Record get_or_default(const Record& def = Record()) {
-            return _table.get_or_default(the_key, def);
-        }
-        
-        Record get_or_create(const Record& def = Record()) {
-            return _table.get_or_create(the_key, def);
-        }
-        
-        template<typename Modifier>
-        void update(Modifier m) {
-            return _table.update(the_key, m);
-        }
-        
-        void remove() {
-            return _table.remove(the_key);
-        }
-        
-    private:
-        table_type _table;
-    };
-    
     template <class T, class M> M get_member_type(M T::*);
 }
 
@@ -157,15 +120,3 @@ _COSIO_NAMED_TABLE(BOOST_PP_SEQ_CAT((__cosio_name)(__COUNTER__)), NAME, RECORD, 
 #define COSIO_DEFINE_TABLE(VARNAME, RECORD, INDICES)  COSIO_NAMED_TABLE(BOOST_PP_STRINGIZE(VARNAME), RECORD, INDICES) VARNAME
 
 #define COSIO_DEFINE_NAMED_TABLE(VARNAME, NAME, RECORD, INDICES)  COSIO_NAMED_TABLE(NAME, RECORD, INDICES) VARNAME
-
-
-#define _COSIO_NAMED_SINGLETON(NAMETYPE, NAME, RECORD) \
-_COSIO_NAME_PROVIDER(NAMETYPE, NAME);\
-cosio::singleton<RECORD, NAMETYPE>
-
-#define COSIO_NAMED_SINGLETON(NAME, RECORD) \
-_COSIO_NAMED_SINGLETON(BOOST_PP_SEQ_CAT((__cosio_name)(__COUNTER__)), NAME, RECORD)
-
-#define COSIO_DEFINE_SINGLETON(VARNAME, RECORD)  COSIO_NAMED_SINGLETON(BOOST_PP_STRINGIZE(VARNAME), RECORD) VARNAME
-
-#define COSIO_DEFINE_NAMED_SINGLETON(VARNAME, NAME, RECORD)  COSIO_NAMED_SINGLETON(NAME, RECORD) VARNAME
