@@ -26,6 +26,20 @@
             ]
         },
         {
+            "name":"stats",
+            "base":"cosio::singleton_record",
+            "fields":[
+                {
+                    "name":"users",
+                    "type":"uint32"
+                },
+                {
+                    "name":"visits",
+                    "type":"uint32"
+                }
+            ]
+        },
+        {
             "name":"hi",
             "base":"",
             "fields":[
@@ -56,6 +70,14 @@
             "name":"hello",
             "type":"greeting",
             "primary":"name",
+            "secondary":[
+
+            ]
+        },
+        {
+            "name":"global_counters",
+            "type":"stats",
+            "primary":"id",
             "secondary":[
 
             ]
