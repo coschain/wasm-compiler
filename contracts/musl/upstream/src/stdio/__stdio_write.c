@@ -1,10 +1,10 @@
 #include "stdio_impl.h"
 //include <sys/uio.h>
-#include <cosiolib/print.h>
+#include <cosiolib/system.h>
 
 size_t __stdio_write(FILE *f, const unsigned char *buf, size_t len)
 {
-   prints_l((char*)(f->wbase), f->wpos-f->wbase);
-   prints_l((void*)buf, len);
+   print_str((char*)(f->wbase), f->wpos-f->wbase);
+   print_str((void*)buf, len);
    return f->wpos-f->wbase + len;
 }
