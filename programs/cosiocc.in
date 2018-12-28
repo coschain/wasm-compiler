@@ -7,7 +7,9 @@ fi
 COSIO_INSTALL_DIR=`dirname ${COSIO_BIN_INSTALL_DIR}`
 ABIGEN=${COSIO_INSTALL_DIR}/programs/cosio-abigen/cosio-abigen
 BOOST_INCLUDE_DIR=@Boost_INCLUDE_DIR@
-SOURCE_LIB_DIR=@CMAKE_SOURCE_DIR@/contracts/
+SYSTEM_HEADER_DIR=@CMAKE_SOURCE_DIR@/contracts/
+SYSTEM_LIBRARY_DIR=@CMAKE_BINARY_DIR@/contracts/
+S2WASM_BINARY=@CMAKE_BINARY_DIR@/externals/binaryen/bin/cosio-s2wasm
 
 function copy_skeleton {
     set -e
@@ -44,9 +46,9 @@ function build_contract {
         ($PRINT_CMDS; @WASM_CLANG@ -emit-llvm -O3 --std=c++14 --target=wasm32 -nostdinc \
                                    -DBOOST_DISABLE_ASSERTS -DBOOST_EXCEPTION_DISABLE \
                                    -nostdlib -nostdlibinc -ffreestanding -nostdlib -fno-threadsafe-statics -fno-rtti \
-                                   -fno-exceptions -I ${COSIO_INSTALL_DIR}/include \
-                                   -I${COSIO_INSTALL_DIR}/include/libc++/upstream/include \
-                                   -I${COSIO_INSTALL_DIR}/include/musl/upstream/include \
+                                   -fno-exceptions -I${SYSTEM_HEADER_DIR} \
+                                   -I${SYSTEM_HEADER_DIR}/libc++/upstream/include \
+                                   -I${SYSTEM_HEADER_DIR}/musl/upstream/include \
                                    -I${BOOST_INCLUDE_DIR} \
                                    -I $filePath \
                                    ${EOSIOCPP_CFLAGS} \
@@ -56,15 +58,16 @@ function build_contract {
     done
 
     ($PRINT_CMDS; @WASM_LLVM_LINK@ -only-needed -o $workdir/linked.bc $workdir/built/* \
-                                   ${COSIO_INSTALL_DIR}/usr/share/cosio/contractsdk/lib/cosiolib.bc \
-                                   ${COSIO_INSTALL_DIR}/usr/share/cosio/contractsdk/lib/libc++.bc \
-                                   ${COSIO_INSTALL_DIR}/usr/share/cosio/contractsdk/lib/libc.bc
+                                   ${SYSTEM_LIBRARY_DIR}/cosiolib/cosiolib.bc \
+                                   ${SYSTEM_LIBRARY_DIR}/libc++/libc++.bc \
+                                   ${SYSTEM_LIBRARY_DIR}/musl/libc.bc
 
 
     )
     ($PRINT_CMDS; @WASM_LLC@ -thread-model=single --asm-verbose=false -o $workdir/assembly.s $workdir/linked.bc)
-    ($PRINT_CMDS; ${COSIO_INSTALL_DIR}/bin/cosio-s2wasm -o $outname -s 16384 $workdir/assembly.s)
-    ($PRINT_CMDS; ${COSIO_INSTALL_DIR}/bin/cosio-wast2wasm $outname ${outname%.*}.wasm -n)
+    ($PRINT_CMDS; ${S2WASM_BINARY} -o $outname -s 16384 $workdir/assembly.s)
+    # TODO 
+    #($PRINT_CMDS; ${COSIO_INSTALL_DIR}/bin/cosio-wast2wasm $outname ${outname%.*}.wasm -n)
 
     ($PRINT_CMDS; rm -rf $workdir)
     set +e
@@ -79,24 +82,13 @@ function generate_abi {
     
     context_folder=$(cd "$(dirname "$1")" ; pwd -P)
     
-    echo "${ABIGEN} -extra-arg=-c -extra-arg=--std=c++14 -extra-arg=--target=wasm32 \
-        -extra-arg=-nostdinc -extra-arg=-nostdinc++ -extra-arg=-DABIGEN \
-        -extra-arg=-I${SOURCE_LIB_DIR}/libc++/upstream/include \
-        -extra-arg=-I${SOURCE_LIB_DIR}/musl/upstream/include \
-        -extra-arg=-I${BOOST_INCLUDE_DIR} \
-        -extra-arg=${EOSIOCPP_CFLAGS}  \
-        -extra-arg=-I${SOURCE_LIB_DIR} -extra-arg=-I$context_folder \
-        -extra-arg=-fparse-all-comments -destination-file=${outname} -verbose=0 \
-        -context=$context_folder $1 -- "
-    
-
     ${ABIGEN} -extra-arg=-c -extra-arg=--std=c++14 -extra-arg=--target=wasm32 \
         -extra-arg=-nostdinc -extra-arg=-nostdinc++ -extra-arg=-DABIGEN \
-        -extra-arg=-I${SOURCE_LIB_DIR}/libc++/upstream/include \
-        -extra-arg=-I${SOURCE_LIB_DIR}/musl/upstream/include \
+        -extra-arg=-I${SYSTEM_HEADER_DIR}/libc++/upstream/include \
+        -extra-arg=-I${SYSTEM_HEADER_DIR}/musl/upstream/include \
         -extra-arg=-I${BOOST_INCLUDE_DIR} \
         -extra-arg=${EOSIOCPP_CFLAGS}  \
-        -extra-arg=-I${SOURCE_LIB_DIR} -extra-arg=-I$context_folder \
+        -extra-arg=-I${SYSTEM_HEADER_DIR} -extra-arg=-I$context_folder \
         -extra-arg=-fparse-all-comments -destination-file=${outname} -verbose=0 \
         -context=$context_folder $1 --
 
