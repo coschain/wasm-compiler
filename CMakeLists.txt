@@ -49,6 +49,7 @@ else( WIN32 ) # Apple AND Linux
     set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 endif( WIN32 )
 
+add_subdirectory( externals )
 add_subdirectory( libraries )
 add_subdirectory( programs )
 add_subdirectory( contracts )
