@@ -23,6 +23,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS "ON")
 include( InstallDirectoryPermissions )
 include( wasm )
 
+find_program(WABT_WAT2WASM wat2wasm)
+
+if (WABT_WAT2WASM)
+    MESSAGE( STATUS "wat2wasm found ===> ${WABT_WAT2WASM}")
+else()
+    MESSAGE( FATAL_ERROR "wat2wasm not found, please first run 'brew install wabt'")
+endif()
+
+
 MESSAGE( STATUS "BUILD_CONTENTOS_TOOLCHAIN" )
 
 FIND_PACKAGE(Boost 1.58 REQUIRED COMPONENTS ${BOOST_COMPONENTS})

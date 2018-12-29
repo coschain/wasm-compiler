@@ -10,6 +10,9 @@ BOOST_INCLUDE_DIR=@Boost_INCLUDE_DIR@
 SYSTEM_HEADER_DIR=@CMAKE_SOURCE_DIR@/contracts/
 SYSTEM_LIBRARY_DIR=@CMAKE_BINARY_DIR@/contracts/
 S2WASM_BINARY=@CMAKE_BINARY_DIR@/externals/binaryen/bin/cosio-s2wasm
+WAT2WASM_BINARY=@WABT_WAT2WASM@
+
+
 
 function copy_skeleton {
     set -e
@@ -58,16 +61,14 @@ function build_contract {
     done
 
     ($PRINT_CMDS; @WASM_LLVM_LINK@ -only-needed -o $workdir/linked.bc $workdir/built/* \
-                                   ${SYSTEM_LIBRARY_DIR}/cosiolib/cosiolib.bc \
                                    ${SYSTEM_LIBRARY_DIR}/libc++/libc++.bc \
-                                   ${SYSTEM_LIBRARY_DIR}/musl/libc.bc
-
-
+                                   ${SYSTEM_LIBRARY_DIR}/musl/libc.bc \
+                                   ${SYSTEM_LIBRARY_DIR}/cosiolib/cosiolib.bc
     )
     ($PRINT_CMDS; @WASM_LLC@ -thread-model=single --asm-verbose=false -o $workdir/assembly.s $workdir/linked.bc)
     ($PRINT_CMDS; ${S2WASM_BINARY} -o $outname -s 16384 $workdir/assembly.s)
     # TODO 
-    #($PRINT_CMDS; ${COSIO_INSTALL_DIR}/bin/cosio-wast2wasm $outname ${outname%.*}.wasm -n)
+    ($PRINT_CMDS; ${WAT2WASM_BINARY} $outname -o ${outname%.*}.wasm)
 
     ($PRINT_CMDS; rm -rf $workdir)
     set +e
