@@ -17,35 +17,34 @@ namespace cosio {
     class singleton {
     public:
         using table_type = table<Record, int32_t, NameProvider>;
-        static constexpr int32_t the_key = _COSIO_SINGLETON_DATA_ID;
         
     public:
         bool exists() {
-            return _table.has(the_key);
+            return _table.has(_COSIO_SINGLETON_DATA_ID);
         }
         
         Record get() {
-            return _table.get(the_key);
+            return _table.get(_COSIO_SINGLETON_DATA_ID);
         }
         
         Record get_or_default(const Record& def = Record()) {
-            return _table.get_or_default(the_key, def);
+            return _table.get_or_default(_COSIO_SINGLETON_DATA_ID, def);
         }
         
         Record get_or_create(const Record& def = Record()) {
-            return _table.get_or_create(the_key, def);
+            return _table.get_or_create(_COSIO_SINGLETON_DATA_ID, def);
         }
         
         template<typename Modifier>
         void update(Modifier m) {
-            _table.update(the_key, [&](Record& r) {
+            _table.update(_COSIO_SINGLETON_DATA_ID, [&](Record& r) {
                 m(r);
-                r.id = the_key;
+                r.id = _COSIO_SINGLETON_DATA_ID;
             });
         }
         
         void remove() {
-            return _table.remove(the_key);
+            return _table.remove(_COSIO_SINGLETON_DATA_ID);
         }
         
     private:
