@@ -53,7 +53,7 @@ struct type_def {
 
    void to_json(ptree& out){
       out.put("new_type_name", new_type_name.c_str());
-      out.put("type", type.c_str());
+      out.put("type", type);
    }
 };
 
@@ -71,8 +71,8 @@ struct field_def {
    }
 
    void to_json(ptree& out){
-      out.put("name", name.c_str());
-      out.put("type", type.c_str());
+      out.put("name", name);
+      out.put("type", type);
    }
 };
 
@@ -91,8 +91,8 @@ struct struct_def {
    }
 
    void to_json(ptree& out){
-      out.put("name", name.c_str());
-      out.put("base", base.c_str());
+      out.put("name", name);
+      out.put("base", base);
 
       ptree ofields;
       for(auto i : fields){
@@ -115,8 +115,8 @@ struct action_def {
    string      ricardian_contract;
 
    void to_json(ptree& out){
-      out.put("name", name.c_str());
-      out.put("type", type.c_str());
+      out.put("name", name);
+      out.put("type", type);
    }
 };
 
@@ -131,6 +131,34 @@ struct table_def {
    vector<field_name> key_names;   // names for the keys defined by key_types
    vector<type_name>  key_types;   // the type of key parameters
    type_name          type;        // type of binary data stored in this table
+
+   void to_json(ptree& out){
+      out.put("name", name);
+      out.put("index_type", index_type);
+      out.put("type", type);
+
+      {
+         ptree obtrees;
+         for(auto i : key_names){
+            ptree obt;
+            obt.put("", i);
+
+            obtrees.push_back( std::make_pair("", obt) );
+         }
+         out.add_child("key_names", obtrees);
+      }
+      {
+         ptree obtrees;
+         for(auto i : key_types){
+            ptree obt;
+            obt.put("", i);
+
+            obtrees.push_back( std::make_pair("", obt) );
+         }
+         out.add_child("key_types", obtrees);
+      }
+   }
+
 };
 
 struct clause_pair {
@@ -165,7 +193,7 @@ struct abi_def {
    ,error_messages(error_msgs)
    {}
 
-   string                version = "contento::abi/1.0";
+   string                version = "contentos::abi-1.0";
    vector<type_def>      types;
    vector<struct_def>    structs;
    vector<action_def>    actions;
@@ -204,6 +232,15 @@ struct abi_def {
          }
          out.add_child("actions", obtrees);
       }
+      {
+         ptree obtrees;
+         for(auto i : tables){
+            ptree obtree;
+            i.to_json(obtree);
+            obtrees.push_back(std::make_pair("", obtree));
+         }
+         out.add_child("tables", obtrees);
+      }
    }
 };
 
@@ -211,13 +248,3 @@ abi_def contento_contract_abi(const abi_def& contento_system_abi);
 vector<type_def> common_type_defs();
 
 } } /// namespace contento::chain
-
-//FC_REFLECT( contento::chain::type_def                         , (new_type_name)(type) )
-//FC_REFLECT( contento::chain::field_def                        , (name)(type) )
-//FC_REFLECT( contento::chain::struct_def                       , (name)(base)(fields) )
-//FC_REFLECT( contento::chain::action_def                       , (name)(type)(ricardian_contract) )
-//FC_REFLECT( contento::chain::table_def                        , (name)(index_type)(key_names)(key_types)(type) )
-//FC_REFLECT( contento::chain::clause_pair                      , (id)(body) )
-//FC_REFLECT( contento::chain::error_message                    , (error_code)(error_msg) )
-//FC_REFLECT( contento::chain::abi_def                          , (version)(types)(structs)(actions)(tables)
-//                                                             (ricardian_clauses)(error_messages) )

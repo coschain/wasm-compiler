@@ -34,6 +34,13 @@ endif()
 
 MESSAGE( STATUS "BUILD_CONTENTOS_TOOLCHAIN" )
 
+SET(BOOST_COMPONENTS)
+LIST(APPEND BOOST_COMPONENTS date_time
+                             system
+                             filesystem
+                             program_options
+                             locale
+                             )
 FIND_PACKAGE(Boost 1.58 REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
 if( WIN32 )
