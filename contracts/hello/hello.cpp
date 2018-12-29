@@ -1,5 +1,5 @@
-#include "../cosiolib/contract.hpp"
-#include "../cosiolib/print.hpp"
+#include <cosiolib/contract.hpp>
+#include <cosiolib/print.hpp>
 
 using timestamp_t = uint64_t;
 

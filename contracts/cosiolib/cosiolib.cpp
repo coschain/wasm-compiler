@@ -1,5 +1,5 @@
-#include "memory.h"
-#include "assert.hpp"
+#include <cosiolib/memory.h>
+#include <cosiolib/assert.hpp>
 
 namespace cosio {
 	

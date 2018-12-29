@@ -1,7 +1,7 @@
 #pragma once
 
-#include "system.h"
-#include "types.hpp"
+#include <cosiolib/system.h>
+#include <cosiolib/types.hpp>
 #include <utility>
 #include <string>
 

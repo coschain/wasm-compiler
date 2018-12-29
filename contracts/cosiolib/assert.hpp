@@ -1,6 +1,6 @@
 #pragma once
 
-#include "system.h"
+#include <cosiolib/system.h>
 #include <string>
 
 namespace cosio {

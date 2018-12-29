@@ -1,7 +1,7 @@
 #pragma once
 
-#include "serialize.hpp"
-#include "table.hpp"
+#include <cosiolib/serialize.hpp>
+#include <cosiolib/table.hpp>
 
 #define _COSIO_SINGLETON_DATA_ID  1
 

@@ -3,8 +3,8 @@
 #include <boost/preprocessor/seq/size.hpp>
 #include <boost/preprocessor/seq/seq.hpp>
 #include <boost/preprocessor/stringize.hpp>
-#include "varint.hpp"
-#include "assert.hpp"
+#include <cosiolib/varint.hpp>
+#include <cosiolib/assert.hpp>
 
 #define COSIO_REFLECT_MEMBER_OP( r, OP, elem ) \
   OP t.elem 

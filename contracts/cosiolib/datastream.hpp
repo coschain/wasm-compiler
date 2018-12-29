@@ -1,8 +1,8 @@
 #pragma once
 
-#include "types.hpp"
-#include "varint.hpp"
-#include "assert.hpp"
+#include <cosiolib/types.hpp>
+#include <cosiolib/varint.hpp>
+#include <cosiolib/assert.hpp>
 #include <boost/container/flat_set.hpp>
 #include <boost/container/flat_map.hpp>
 #include <array>

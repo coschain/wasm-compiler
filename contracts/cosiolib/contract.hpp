@@ -1,12 +1,12 @@
 #pragma once
 
-#include "types.hpp"
-#include "assert.hpp"
-#include "system.h"
-#include "serialize.hpp"
-#include "datastream.hpp"
-#include "table.hpp"
-#include "singleton.hpp"
+#include <cosiolib/types.hpp>
+#include <cosiolib/assert.hpp>
+#include <cosiolib/system.h>
+#include <cosiolib/serialize.hpp>
+#include <cosiolib/datastream.hpp>
+#include <cosiolib/table.hpp>
+#include <cosiolib/singleton.hpp>
 #include <type_traits>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>

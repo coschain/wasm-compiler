@@ -1,8 +1,8 @@
 #pragma once
 
-#include "types.hpp"
-#include "system.h"
-#include "datastream.hpp"
+#include <cosiolib/types.hpp>
+#include <cosiolib/system.h>
+#include <cosiolib/datastream.hpp>
 #include <string>
 
 namespace cosio {

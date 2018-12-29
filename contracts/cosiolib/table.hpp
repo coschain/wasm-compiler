@@ -3,8 +3,8 @@
 #include <boost/preprocessor/seq/seq.hpp>
 #include <boost/preprocessor/seq/cat.hpp>
 #include <boost/preprocessor/stringize.hpp>
-#include "types.hpp"
-#include "system.hpp"
+#include <cosiolib/types.hpp>
+#include <cosiolib/system.hpp>
 
 namespace cosio {
     

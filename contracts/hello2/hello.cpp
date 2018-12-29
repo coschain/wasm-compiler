@@ -4,8 +4,8 @@
 // 然后切换到 build/programs 目录下
 // 运行  ./cosiocc -g ../../contracts/hello2/hello.cpp.abi ../../contracts/hello2/hello.cpp
 
-#include "../cosiolib/contract.hpp"
-#include "../cosiolib/print.hpp"
+#include <cosiolib/contract.hpp>
+#include <cosiolib/print.hpp>
 
 using timestamp_t = uint64_t;
 
