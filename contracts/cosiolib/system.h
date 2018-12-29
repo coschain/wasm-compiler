@@ -105,7 +105,7 @@ extern "C" {
     /**
      Query a record in a database table.
      @param[in] table_name name of the table.
-     @param[in] table_name_length length of @p table_name.
+     @param[in] table_name_len length of @p table_name.
      @param[in] primary the primary key for query.
      @param[in] primary_len length of @p primary.
      @param[in,out] value the buffer to which record data are stored.
@@ -118,7 +118,7 @@ extern "C" {
     /**
      Create a record in a database table.
      @param[in] table_name name of the table.
-     @param[in] table_name_length length of @p table_name.
+     @param[in] table_name_len length of @p table_name.
      @param[in] value the record value.
      @param[in] value_len length of @p value.
      */
@@ -127,7 +127,7 @@ extern "C" {
     /**
      Update a record in a database table.
      @param[in] table_name name of the table.
-     @param[in] table_name_length length of @p table_name.
+     @param[in] table_name_len length of @p table_name.
      @param[in] primary the primary key of the record.
      @param[in] primary_len length of @p primary.
      @param[in] value the updated record value.
@@ -138,7 +138,7 @@ extern "C" {
     /**
      Delete a record in a database table.
      @param[in] table_name name of the table.
-     @param[in] table_name_length length of @p table_name.
+     @param[in] table_name_len length of @p table_name.
      @param[in] primary the primary key of the record.
      @param[in] primary_len length of @p primary.
      */
@@ -162,7 +162,7 @@ extern "C" {
     /**
      Get parameters data of current contract.
      @param[in,out] buf the buffer to which parameter data are stored.
-     @param[in] capacity of @p buf.
+     @param[in] size capacity of @p buf.
      @return if @p size is positive, return the number of bytes written to @p buf.
      if @p size is zero or negative, return the actual length of parameter data without changing @p buf.
      */
