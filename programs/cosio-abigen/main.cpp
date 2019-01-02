@@ -38,25 +38,26 @@ std::unique_ptr<FrontendActionFactory> create_factory(bool verbose, bool opt_sfs
   );
 }
 
-std::unique_ptr<FrontendActionFactory> create_find_macro_factory(string& contract, vector<string>& actions, string abi_context) {
+std::unique_ptr<FrontendActionFactory> create_find_macro_factory(string& contract, vector<string>& actions, string abi_context,abi_def& output) {
 
   struct abi_frontend_macro_action_factory : public FrontendActionFactory {
 
     string&          contract;
     vector<string>&  actions;
     string           abi_context;
+    abi_def&               output;
 
     abi_frontend_macro_action_factory (string& contract, vector<string>& actions,
-      string abi_context ) : contract(contract), actions(actions), abi_context(abi_context) {}
+      string abi_context,abi_def& output) : contract(contract), actions(actions), abi_context(abi_context), output(output) {}
 
     clang::FrontendAction *create() override {
-      return new find_contento_abi_macro_action(contract, actions, abi_context);
+      return new find_contento_abi_macro_action(contract, actions, abi_context,output);
     }
 
   };
 
   return std::unique_ptr<FrontendActionFactory>(
-    new abi_frontend_macro_action_factory(contract, actions, abi_context)
+    new abi_frontend_macro_action_factory(contract, actions, abi_context,output)
   );
 }
 
@@ -97,7 +98,7 @@ int main(int argc, const char **argv) { abi_def output; try {
 
    string contract;
    vector<string> actions;
-   int result = Tool.run(create_find_macro_factory(contract, actions, abi_context).get());
+   int result = Tool.run(create_find_macro_factory(contract, actions, abi_context,output).get());
    if(!result) {
       result = Tool.run(create_factory(abi_verbose, abi_opt_sfs, abi_context, output, contract, actions).get());
       if(!result) {

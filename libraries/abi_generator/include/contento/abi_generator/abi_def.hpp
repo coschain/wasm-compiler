@@ -119,6 +119,38 @@ struct action_def {
       out.put("type", type);
    }
 };
+    
+    struct cos_table_def {
+        cos_table_def() = default;
+        cos_table_def(const table_name& name, const type_name& type, const vector<field_name>& key_names)
+        :name(name), type(type), keys(key_names)
+        {}
+        
+        table_name         name;        // the name of the table
+        type_name          type;  // the kind of index, i64, i128i128, etc
+        vector<field_name> keys;   // names for the keys
+        
+        void to_json(ptree& out){
+            out.put("name", name);
+            out.put("type", type);
+            
+            {
+                ptree obtrees;
+                for(int i=0;i<keys.size();i++){
+                    if (i == 0) {
+                        out.put("primary",keys[i]);
+                    } else {
+                        ptree obt;
+                        obt.put("", keys[i]);
+                        
+                        obtrees.push_back( std::make_pair("", obt) );
+                    }
+                }
+                out.add_child("secondary", obtrees);
+            }
+        }
+        
+    };
 
 struct table_def {
    table_def() = default;
@@ -183,7 +215,7 @@ struct error_message {
 
 struct abi_def {
    abi_def() = default;
-   abi_def(const vector<type_def>& types, const vector<struct_def>& structs, const vector<action_def>& actions, const vector<table_def>& tables, const vector<clause_pair>& clauses, const vector<error_message>& error_msgs)
+   abi_def(const vector<type_def>& types, const vector<struct_def>& structs, const vector<action_def>& actions, const vector<table_def>& tables, const vector<clause_pair>& clauses, const vector<error_message>& error_msgs, const vector<cos_table_def>& cos_tables)
    :version("contento::abi/1.0")
    ,types(types)
    ,structs(structs)
@@ -191,6 +223,7 @@ struct abi_def {
    ,tables(tables)
    ,ricardian_clauses(clauses)
    ,error_messages(error_msgs)
+   ,cos_tables(cos_tables)
    {}
 
    string                version = "contentos::abi-1.0";
@@ -200,6 +233,7 @@ struct abi_def {
    vector<table_def>     tables;
    vector<clause_pair>   ricardian_clauses;
    vector<error_message> error_messages;
+   vector<cos_table_def> cos_tables;
    //extensions_type       abi_extensions;
 
    void to_json(ptree& out){
@@ -241,6 +275,15 @@ struct abi_def {
          }
          out.add_child("tables", obtrees);
       }
+       {
+           ptree obtrees;
+           for(auto i : cos_tables){
+               ptree obtree;
+               i.to_json(obtree);
+               obtrees.push_back(std::make_pair("", obtree));
+           }
+           out.add_child("cos_tables", obtrees);
+       }
    }
 };
 

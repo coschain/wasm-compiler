@@ -97,6 +97,34 @@ string abi_generator::translate_type(const string& type_name) {
 
   return built_in_type;
 }
+    
+    void abi_generator::create_struct_for_table_type(const Decl* decl) { try {
+        const auto* rec_decl = dyn_cast<CXXRecordDecl>(decl);
+        if(rec_decl == nullptr) return;
+        
+        const auto* type = rec_decl->getTypeForDecl();
+        ABI_ASSERT(type != nullptr);
+        
+        vector<string> all_types;
+        for(auto t : output->cos_tables) {
+            all_types.push_back(t.type);
+        }
+         auto rec_name = rec_decl->getNameAsString();
+         bool is_action_from_macro = std::find(all_types.begin(), all_types.end(), rec_name) != all_types.end();
+        if(!is_action_from_macro) {
+            return;
+        }
+        
+        auto qt = rec_decl->getTypeForDecl()->getCanonicalTypeInternal();
+        auto type_name = add_struct(qt, "", 0);
+        
+        ABI_ASSERT(!is_builtin_type(type_name),
+                   "A built-in type with the same name exists, try using another name: ${type_name}", ("type_name",type_name));
+        
+        const auto* s = find_struct(type_name);
+        ABI_ASSERT(s, "Unable to find type ${type}", ("type",type_name));
+        
+    }FC_CAPTURE_AND_RETHROW()}
 
 bool abi_generator::inspect_type_methods_for_actions(const Decl* decl) { try {
 
@@ -112,6 +140,7 @@ bool abi_generator::inspect_type_methods_for_actions(const Decl* decl) { try {
 
     auto method_name = method->getNameAsString();
 
+      /* we do not use comment anymore
     // Try to get "action" annotation from method comment
     bool raw_comment_is_action = false;
     const RawComment* raw_comment = ast_context->getRawCommentForDeclNoCache(method);
@@ -122,12 +151,12 @@ bool abi_generator::inspect_type_methods_for_actions(const Decl* decl) { try {
       smatch smatch;
       regex_search(raw_text, smatch, r);
       raw_comment_is_action = smatch.size() == 3;
-    }
+    }*/
 
     // Check if current method is listed the contento_ABI macro
     bool is_action_from_macro = rec_decl->getName().str() == target_contract && std::find(target_actions.begin(), target_actions.end(), method_name) != target_actions.end();
     
-    if(!raw_comment_is_action && !is_action_from_macro) {
+    if(!is_action_from_macro) {
       return;
     }
 
@@ -208,6 +237,10 @@ void abi_generator::handle_decl(const Decl* decl) { try {
   bool type_has_actions = inspect_type_methods_for_actions(decl);
   if( type_has_actions ) return;
 
+  // if not from action, we check for macro
+  create_struct_for_table_type(decl);
+    
+    /* we do not use comment anymore
   // The current Decl doesn't have actions
   const RawComment* raw_comment = ast_context->getRawCommentForDeclNoCache(decl);
   if(raw_comment == nullptr) {
@@ -303,7 +336,7 @@ void abi_generator::handle_decl(const Decl* decl) { try {
     }
 
     raw_text = smatch.suffix();
-  }
+  }*/
 
 } FC_CAPTURE_AND_RETHROW() }
 

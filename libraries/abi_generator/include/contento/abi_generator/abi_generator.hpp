@@ -241,6 +241,8 @@ namespace contento {
 
       private:
          bool inspect_type_methods_for_actions(const Decl* decl);
+         void create_struct_for_table_type(const Decl* decl);
+
 
          string remove_namespace(const string& full_name);
 
@@ -328,10 +330,12 @@ namespace contento {
          string& contract;
          vector<string>& actions;
          const string& abi_context;
+       abi_def& output;
+       
 
-         find_contento_abi_macro_action(string& contract, vector<string>& actions, const string& abi_context
+         find_contento_abi_macro_action(string& contract, vector<string>& actions, const string& abi_context,abi_def& output
             ): contract(contract),
-            actions(actions), abi_context(abi_context) {
+            actions(actions), abi_context(abi_context),output(output) {
          }
 
          struct callback_handler : public PPCallbacks {
@@ -365,35 +369,75 @@ namespace contento {
 
                auto* id = token.getIdentifierInfo();
                if( id == nullptr ) return;
-               if( id->getName() != "COSIO_ABI" ) return;
-
-               const auto& sm = compiler_instance.getSourceManager();
-               auto file_name = sm.getFilename(range.getBegin());
-               if ( !act.abi_context.empty() && !file_name.startswith(act.abi_context) ) {
-                  return;
-               }
-
-               ABI_ASSERT( md.getMacroInfo()->getNumArgs() == 2 );
-
-               clang::SourceLocation b(range.getBegin()), _e(range.getEnd());
-               clang::SourceLocation e(clang::Lexer::getLocForEndOfToken(_e, 0, sm, compiler_instance.getLangOpts()));
-               auto macrostr = string(sm.getCharacterData(b), sm.getCharacterData(e)-sm.getCharacterData(b));
-
-               regex r(R"(COSIO_ABI\s*\(\s*(.+?)\s*,((?:.+?)*)\s*\))");
-               smatch smatch;
-               auto res = regex_search(macrostr, smatch, r);
-               ABI_ASSERT( res );
-
-               act.contract = remove_namespace(smatch[1].str());
-
-               auto actions_str = smatch[2].str();
-               boost::trim(actions_str);
-               actions_str = actions_str.substr(1);
-               actions_str.pop_back();
-               boost::remove_erase_if(actions_str, boost::is_any_of(" ("));
-
-               boost::split(act.actions, actions_str, boost::is_any_of(")"));
+                if( id->getName() != "COSIO_ABI" ) {
+                    return handle_cosio_abi(md,range,args);
+                } else if ( id->getName() != "COSIO_DEFINE_TABLE" ) {
+                    return handle_cosio_define_table(md,range,args);
+                }
             }
+             
+         private:
+             void handle_cosio_abi(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
+                 const auto& sm = compiler_instance.getSourceManager();
+                 auto file_name = sm.getFilename(range.getBegin());
+                 if ( !act.abi_context.empty() && !file_name.startswith(act.abi_context) ) {
+                     return;
+                 }
+                 
+                 ABI_ASSERT( md.getMacroInfo()->getNumArgs() == 2 );
+                 
+                 clang::SourceLocation b(range.getBegin()), _e(range.getEnd());
+                 clang::SourceLocation e(clang::Lexer::getLocForEndOfToken(_e, 0, sm, compiler_instance.getLangOpts()));
+                 auto macrostr = string(sm.getCharacterData(b), sm.getCharacterData(e)-sm.getCharacterData(b));
+                 
+                 regex r(R"(COSIO_ABI\s*\(\s*(.+?)\s*,((?:.+?)*)\s*\))");
+                 smatch smatch;
+                 auto res = regex_search(macrostr, smatch, r);
+                 ABI_ASSERT( res );
+                 
+                 act.contract = remove_namespace(smatch[1].str());
+                 
+                 auto actions_str = smatch[2].str();
+                 boost::trim(actions_str);
+                 actions_str = actions_str.substr(1);
+                 actions_str.pop_back();
+                 boost::remove_erase_if(actions_str, boost::is_any_of(" ("));
+                 
+                 boost::split(act.actions, actions_str, boost::is_any_of(")"));
+             }
+             
+             void handle_cosio_define_table(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
+                 const auto& sm = compiler_instance.getSourceManager();
+                 auto file_name = sm.getFilename(range.getBegin());
+                 if ( !act.abi_context.empty() && !file_name.startswith(act.abi_context) ) {
+                     return;
+                 }
+                 
+                 ABI_ASSERT( md.getMacroInfo()->getNumArgs() == 3 );
+                 
+                 clang::SourceLocation b(range.getBegin()), _e(range.getEnd());
+                 clang::SourceLocation e(clang::Lexer::getLocForEndOfToken(_e, 0, sm, compiler_instance.getLangOpts()));
+                 auto macrostr = string(sm.getCharacterData(b), sm.getCharacterData(e)-sm.getCharacterData(b));
+                 //COSIO_DEFINE_TABLE( table_greetings, greeting, (name)(count)(last_seen) );
+                 regex r(R"(COSIO_DEFINE_TABLE\s*\(\s*(.+?)\s*,\s*(.+?)\s*,((?:.+?)*)\s*\))");
+                 smatch smatch;
+                 auto res = regex_search(macrostr, smatch, r);
+                 ABI_ASSERT( res );
+                 
+                 cos_table_def table;
+                 table.name = smatch[1];
+                 table.type = smatch[2];
+                 
+                 
+                 auto actions_str = smatch[2].str();
+                 boost::trim(actions_str);
+                 actions_str = actions_str.substr(1);
+                 actions_str.pop_back();
+                 boost::remove_erase_if(actions_str, boost::is_any_of(" ("));
+                 
+                 boost::split(table.keys, actions_str, boost::is_any_of(")"));
+                 act.output.cos_tables.push_back(table);
+             }
          };
 
          void ExecuteAction() override {
