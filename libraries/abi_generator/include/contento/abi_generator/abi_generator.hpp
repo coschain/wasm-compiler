@@ -165,10 +165,6 @@ namespace contento {
 
          bool is_str_index(const vector<field_def>& fields);
 
-         void guess_index_type(table_def& table, const struct_def s);
-
-         void guess_key_names(table_def& table, const struct_def s);
-
          const table_def* find_table(const table_name& name);
 
          const type_def* find_type(const type_name& new_type_name);
@@ -328,7 +324,7 @@ namespace contento {
                  auto res = regex_search(macrostr, smatch, r);
                  ABI_ASSERT( res );
                  
-                 cos_table_def table;
+                 table_def table;
                  table.name = smatch[1];
                  table.type = smatch[2];
                  
@@ -340,7 +336,7 @@ namespace contento {
                  boost::remove_erase_if(actions_str, boost::is_any_of(" ("));
                  
                  boost::split(table.keys, actions_str, boost::is_any_of(")"));
-                 act.output.cos_tables.push_back(table);
+                 act.output.tables.push_back(table);
              }
              
              void handle_cosio_define_named_table(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
@@ -361,7 +357,7 @@ namespace contento {
                  auto res = regex_search(macrostr, smatch, r);
                  ABI_ASSERT( res );
                  
-                 cos_table_def table;
+                 table_def table;
                  auto tmp_name = smatch[2].str();
                  boost::remove_erase_if(tmp_name, boost::is_any_of("\""));
                  table.name = tmp_name;
@@ -375,7 +371,7 @@ namespace contento {
                  boost::remove_erase_if(actions_str, boost::is_any_of(" ("));
                  
                  boost::split(table.keys, actions_str, boost::is_any_of(")"));
-                 act.output.cos_tables.push_back(table);
+                 act.output.tables.push_back(table);
              }
              
              void handle_cosio_define_named_singleton(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
@@ -396,14 +392,14 @@ namespace contento {
                  auto res = regex_search(macrostr, smatch, r);
                  ABI_ASSERT( res );
                  
-                 cos_table_def table;
+                 table_def table;
                  auto tmp_name = smatch[2].str();
                  boost::remove_erase_if(tmp_name, boost::is_any_of("\""));
                  table.name = tmp_name;
                  table.type = smatch[3];
                  
                  table.keys.push_back("id");
-                 act.output.cos_tables.push_back(table);
+                 act.output.tables.push_back(table);
              }
          };
 

@@ -119,9 +119,9 @@ struct action_def {
    }
 };
     
-    struct cos_table_def {
-        cos_table_def() = default;
-        cos_table_def(const table_name& name, const type_name& type, const vector<field_name>& key_names)
+    struct table_def {
+        table_def() = default;
+        table_def(const table_name& name, const type_name& type, const vector<field_name>& key_names)
         :name(name), type(type), keys(key_names)
         {}
         
@@ -151,47 +151,6 @@ struct action_def {
         
     };
 
-struct table_def {
-   table_def() = default;
-   table_def(const table_name& name, const type_name& index_type, const vector<field_name>& key_names, const vector<type_name>& key_types, const type_name& type)
-   :name(name), index_type(index_type), key_names(key_names), key_types(key_types), type(type)
-   {}
-
-   table_name         name;        // the name of the table
-   type_name          index_type;  // the kind of index, i64, i128i128, etc
-   vector<field_name> key_names;   // names for the keys defined by key_types
-   vector<type_name>  key_types;   // the type of key parameters
-   type_name          type;        // type of binary data stored in this table
-
-   void to_json(ptree& out){
-      out.put("name", name);
-      out.put("index_type", index_type);
-      out.put("type", type);
-
-      {
-         ptree obtrees;
-         for(auto i : key_names){
-            ptree obt;
-            obt.put("", i);
-
-            obtrees.push_back( std::make_pair("", obt) );
-         }
-         out.add_child("key_names", obtrees);
-      }
-      {
-         ptree obtrees;
-         for(auto i : key_types){
-            ptree obt;
-            obt.put("", i);
-
-            obtrees.push_back( std::make_pair("", obt) );
-         }
-         out.add_child("key_types", obtrees);
-      }
-   }
-
-};
-
 struct error_message {
    error_message() = default;
    error_message( uint64_t error_code, const string& error_msg )
@@ -204,23 +163,21 @@ struct error_message {
 
 struct abi_def {
    abi_def() = default;
-   abi_def(const vector<type_def>& types, const vector<struct_def>& structs, const vector<action_def>& actions, const vector<table_def>& tables, const vector<error_message>& error_msgs, const vector<cos_table_def>& cos_tables)
+   abi_def(const vector<type_def>& types, const vector<struct_def>& structs, const vector<action_def>& actions, const vector<error_message>& error_msgs, const vector<table_def>& tables)
    :version("contento::abi/1.0")
    ,types(types)
    ,structs(structs)
    ,actions(actions)
-   ,tables(tables)
    ,error_messages(error_msgs)
-   ,cos_tables(cos_tables)
+   ,tables(tables)
    {}
 
    string                version = "contentos::abi-1.0";
    vector<type_def>      types;
    vector<struct_def>    structs;
    vector<action_def>    actions;
-   vector<table_def>     tables;
    vector<error_message> error_messages;
-   vector<cos_table_def> cos_tables;
+   vector<table_def> tables;
    //extensions_type       abi_extensions;
 
    void to_json(ptree& out){
@@ -253,23 +210,14 @@ struct abi_def {
          }
          out.add_child("actions", obtrees);
       }
-      {
-         ptree obtrees;
-         for(auto i : tables){
-            ptree obtree;
-            i.to_json(obtree);
-            obtrees.push_back(std::make_pair("", obtree));
-         }
-         out.add_child("tables", obtrees);
-      }
        {
            ptree obtrees;
-           for(auto i : cos_tables){
+           for(auto i : tables){
                ptree obtree;
                i.to_json(obtree);
                obtrees.push_back(std::make_pair("", obtree));
            }
-           out.add_child("cos_tables", obtrees);
+           out.add_child("tables", obtrees);
        }
    }
 };

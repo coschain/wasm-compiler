@@ -102,7 +102,7 @@ string abi_generator::translate_type(const string& type_name) {
         ABI_ASSERT(type != nullptr);
         
         vector<string> all_types;
-        for(auto t : output->cos_tables) {
+        for(auto t : output->tables) {
             all_types.push_back(t.type);
         }
          auto rec_name = rec_decl->getNameAsString();
@@ -364,45 +364,6 @@ void abi_generator::get_all_fields(const struct_def& s, vector<field_def>& field
 
 bool abi_generator::is_i64_index(const vector<field_def>& fields) {
   return fields.size() >= 1 && is_64bit(fields[0].type);
-}
-
-void abi_generator::guess_index_type(table_def& table, const struct_def s) {
-  vector<field_def> fields;
-  get_all_fields(s, fields);
-  if( is_i64_index(fields) ) {
-    table.index_type = "i64";
-  } else {
-    ABI_ASSERT(false, "Unable to guess index type");
-  }
-}
-
-void abi_generator::guess_key_names(table_def& table, const struct_def s) {
-
-  vector<field_def> fields;
-  get_all_fields(s, fields);
-
- if( table.index_type == "i64") {
-
-    table.key_names.clear();
-    table.key_types.clear();
-
-    unsigned int key_size = 0;
-    bool valid_key = false;
-    for(auto& f : fields) {
-      table.key_names.emplace_back(f.name);
-      table.key_types.emplace_back(f.type);
-      key_size += type_size[f.type]/8;
-
-      if(table.index_type == "i64" && key_size >= sizeof(uint64_t)) {
-        valid_key = true;
-        break;
-      }
-    }
-
-    ABI_ASSERT(valid_key, "Unable to guess key names");
-  } else {
-    ABI_ASSERT(false, "Unable to guess key names");
-  }
 }
 
 const table_def* abi_generator::find_table(const table_name& name) {
