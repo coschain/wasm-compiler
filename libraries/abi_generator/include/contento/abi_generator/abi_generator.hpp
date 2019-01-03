@@ -377,7 +377,7 @@ namespace contento {
                 } else if ( name == "COSIO_DEFINE_NAMED_TABLE" ) {
                     return handle_cosio_define_named_table(md,range,args);
                 } else if ( name == "COSIO_DEFINE_NAMED_SINGLETON" ) {
-                    //return handle_cosio_define_named_singleton(md,range,args);
+                    return handle_cosio_define_named_singleton(md,range,args);
                 } else {
                     // todo
                 }
@@ -481,7 +481,7 @@ namespace contento {
                  act.output.cos_tables.push_back(table);
              }
              
-             /*void handle_cosio_define_named_singleton(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
+             void handle_cosio_define_named_singleton(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
                  const auto& sm = compiler_instance.getSourceManager();
                  auto file_name = sm.getFilename(range.getBegin());
                  if ( !act.abi_context.empty() && !file_name.startswith(act.abi_context) ) {
@@ -500,12 +500,14 @@ namespace contento {
                  ABI_ASSERT( res );
                  
                  cos_table_def table;
-                 table.name = smatch[2];
+                 auto tmp_name = smatch[2].str();
+                 boost::remove_erase_if(tmp_name, boost::is_any_of("\""));
+                 table.name = tmp_name;
                  table.type = smatch[3];
                  
                  table.keys.push_back("id");
                  act.output.cos_tables.push_back(table);
-             }*/
+             }
          };
 
          void ExecuteAction() override {
