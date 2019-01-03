@@ -106,13 +106,12 @@ struct struct_def {
 
 struct action_def {
    action_def() = default;
-   action_def(const action_name& name, const type_name& type, const string& ricardian_contract)
-   :name(name), type(type), ricardian_contract(ricardian_contract)
+   action_def(const action_name& name, const type_name& type)
+   :name(name), type(type)
    {}
 
    action_name name;
    type_name   type;
-   string      ricardian_contract;
 
    void to_json(ptree& out){
       out.put("name", name);
@@ -193,16 +192,6 @@ struct table_def {
 
 };
 
-struct clause_pair {
-   clause_pair() = default;
-   clause_pair( const string& id, const string& body )
-   : id(id), body(body)
-   {}
-
-   string id;
-   string body;
-};
-
 struct error_message {
    error_message() = default;
    error_message( uint64_t error_code, const string& error_msg )
@@ -215,13 +204,12 @@ struct error_message {
 
 struct abi_def {
    abi_def() = default;
-   abi_def(const vector<type_def>& types, const vector<struct_def>& structs, const vector<action_def>& actions, const vector<table_def>& tables, const vector<clause_pair>& clauses, const vector<error_message>& error_msgs, const vector<cos_table_def>& cos_tables)
+   abi_def(const vector<type_def>& types, const vector<struct_def>& structs, const vector<action_def>& actions, const vector<table_def>& tables, const vector<error_message>& error_msgs, const vector<cos_table_def>& cos_tables)
    :version("contento::abi/1.0")
    ,types(types)
    ,structs(structs)
    ,actions(actions)
    ,tables(tables)
-   ,ricardian_clauses(clauses)
    ,error_messages(error_msgs)
    ,cos_tables(cos_tables)
    {}
@@ -231,7 +219,6 @@ struct abi_def {
    vector<struct_def>    structs;
    vector<action_def>    actions;
    vector<table_def>     tables;
-   vector<clause_pair>   ricardian_clauses;
    vector<error_message> error_messages;
    vector<cos_table_def> cos_tables;
    //extensions_type       abi_extensions;
