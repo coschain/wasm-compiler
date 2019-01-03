@@ -369,10 +369,17 @@ namespace contento {
 
                auto* id = token.getIdentifierInfo();
                if( id == nullptr ) return;
-                if( id->getName() != "COSIO_ABI" ) {
+                auto name = id->getName();
+                if( name == "COSIO_ABI" ) {
                     return handle_cosio_abi(md,range,args);
-                } else if ( id->getName() != "COSIO_DEFINE_TABLE" ) {
+                } else if ( name == "COSIO_DEFINE_TABLE" ) {
                     return handle_cosio_define_table(md,range,args);
+                } else if ( name == "COSIO_DEFINE_NAMED_TABLE" ) {
+                    return handle_cosio_define_named_table(md,range,args);
+                } else if ( name == "COSIO_DEFINE_NAMED_SINGLETON" ) {
+                    //return handle_cosio_define_named_singleton(md,range,args);
+                } else {
+                    // todo
                 }
             }
              
@@ -429,7 +436,7 @@ namespace contento {
                  table.type = smatch[2];
                  
                  
-                 auto actions_str = smatch[2].str();
+                 auto actions_str = smatch[3].str();
                  boost::trim(actions_str);
                  actions_str = actions_str.substr(1);
                  actions_str.pop_back();
@@ -438,6 +445,67 @@ namespace contento {
                  boost::split(table.keys, actions_str, boost::is_any_of(")"));
                  act.output.cos_tables.push_back(table);
              }
+             
+             void handle_cosio_define_named_table(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
+                 const auto& sm = compiler_instance.getSourceManager();
+                 auto file_name = sm.getFilename(range.getBegin());
+                 if ( !act.abi_context.empty() && !file_name.startswith(act.abi_context) ) {
+                     return;
+                 }
+                 
+                 ABI_ASSERT( md.getMacroInfo()->getNumArgs() == 4 );
+                 
+                 clang::SourceLocation b(range.getBegin()), _e(range.getEnd());
+                 clang::SourceLocation e(clang::Lexer::getLocForEndOfToken(_e, 0, sm, compiler_instance.getLangOpts()));
+                 auto macrostr = string(sm.getCharacterData(b), sm.getCharacterData(e)-sm.getCharacterData(b));
+                 //COSIO_DEFINE_TABLE( table_greetings, greeting, (name)(count)(last_seen) );
+                 regex r(R"(COSIO_DEFINE_NAMED_TABLE\s*\(\s*(.+?)\s*,\s*(.+?)\s*,\s*(.+?)\s*,((?:.+?)*)\s*\))");
+                 smatch smatch;
+                 auto res = regex_search(macrostr, smatch, r);
+                 ABI_ASSERT( res );
+                 
+                 cos_table_def table;
+                 auto tmp_name = smatch[2].str();
+                 boost::remove_erase_if(tmp_name, boost::is_any_of("\""));
+                 table.name = tmp_name;
+                 table.type = smatch[3];
+                 
+                 
+                 auto actions_str = smatch[4].str();
+                 boost::trim(actions_str);
+                 actions_str = actions_str.substr(1);
+                 actions_str.pop_back();
+                 boost::remove_erase_if(actions_str, boost::is_any_of(" ("));
+                 
+                 boost::split(table.keys, actions_str, boost::is_any_of(")"));
+                 act.output.cos_tables.push_back(table);
+             }
+             
+             /*void handle_cosio_define_named_singleton(const MacroDefinition &md, SourceRange range, const MacroArgs *args){
+                 const auto& sm = compiler_instance.getSourceManager();
+                 auto file_name = sm.getFilename(range.getBegin());
+                 if ( !act.abi_context.empty() && !file_name.startswith(act.abi_context) ) {
+                     return;
+                 }
+                 
+                 ABI_ASSERT( md.getMacroInfo()->getNumArgs() == 3 );
+                 
+                 clang::SourceLocation b(range.getBegin()), _e(range.getEnd());
+                 clang::SourceLocation e(clang::Lexer::getLocForEndOfToken(_e, 0, sm, compiler_instance.getLangOpts()));
+                 auto macrostr = string(sm.getCharacterData(b), sm.getCharacterData(e)-sm.getCharacterData(b));
+                 //COSIO_DEFINE_TABLE( table_greetings, greeting, (name)(count)(last_seen) );
+                 regex r(R"(COSIO_DEFINE_NAMED_SINGLETON\s*\(\s*(.+?)\s*,\s*(.+?)\s*,\s*(.+?)\s*\))");
+                 smatch smatch;
+                 auto res = regex_search(macrostr, smatch, r);
+                 ABI_ASSERT( res );
+                 
+                 cos_table_def table;
+                 table.name = smatch[2];
+                 table.type = smatch[3];
+                 
+                 table.keys.push_back("id");
+                 act.output.cos_tables.push_back(table);
+             }*/
          };
 
          void ExecuteAction() override {
