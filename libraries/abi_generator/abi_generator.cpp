@@ -636,6 +636,7 @@ string abi_generator::add_struct(const clang::QualType& sqt, string full_name, s
   int total_bases = 0;
 
   string base_name;
+  string full_base_name;
   while( bitr != bases.end() ) {
     auto base_qt = bitr->getType();
     const auto* record_type = base_qt->getAs<clang::RecordType>();
@@ -643,6 +644,11 @@ string abi_generator::add_struct(const clang::QualType& sqt, string full_name, s
       ABI_ASSERT(total_bases == 0, "Multiple inheritance not supported - ${type}", ("type",full_name));
       base_name = add_type(base_qt, recursion_depth);
       ++total_bases;
+      // get full base class name
+      if(!base_name.empty()){
+        clang::QualType qt(get_named_type_if_elaborated(base_qt));
+        full_base_name = translate_type(get_type_name(qt, true));
+      }
     }
     ++bitr;
   }
@@ -665,8 +671,13 @@ string abi_generator::add_struct(const clang::QualType& sqt, string full_name, s
   }
 
   abi_struct.name = resolve_type(name);
-  abi_struct.base = base_name;
-
+    if(base_name.empty()) {
+        abi_struct.base = base_name;
+    } else {
+        abi_struct.base = full_base_name;
+    }
+  
+    
   output->structs.push_back(abi_struct);
 
   full_types[name] = full_name;
@@ -681,7 +692,7 @@ namespace contento { namespace chain {
    vector<type_def> common_type_defs() {
       vector<type_def> types;
 
-      types.push_back( type_def{"account_name", "namex"} );
+       types.push_back( type_def{"account_name", "cosio::account_name"} );
       //    types.push_back( type_def{"account_name2", "namex"} );
       types.push_back( type_def{"permission_name", "name"} );
       types.push_back( type_def{"action_name", "name"} );

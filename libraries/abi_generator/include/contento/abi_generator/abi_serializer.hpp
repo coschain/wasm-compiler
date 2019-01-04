@@ -62,7 +62,7 @@ struct abi_serializer {
    static constexpr size_t max_recursion_depth = 128; // arbitrary depth to prevent infinite recursion
 
 private:
-
+    string remove_namespace(const string& full_name) const;
     bool _is_type(const type_name& type, size_t recursion_depth)const;
 };
 

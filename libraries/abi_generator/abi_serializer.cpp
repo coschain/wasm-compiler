@@ -49,6 +49,7 @@ namespace contento { namespace chain {
 
       built_in_types.emplace("name",                      true);
       built_in_types.emplace("namex",                     true);
+       built_in_types.emplace("cosio::account_name",                     true);
       built_in_types.emplace("namex_",                    true);
       built_in_types.emplace("bytes",                     true);
       built_in_types.emplace("string",                    true);
@@ -148,10 +149,30 @@ namespace contento { namespace chain {
       if( structs.find(type) != structs.end() ) return true;
       return false;
    }
+    
+    string abi_serializer::remove_namespace(const string& full_name) const {
+        int i = full_name.size();
+        int on_spec = 0;
+        int colons = 0;
+        while( --i >= 0 ) {
+            if( full_name[i] == '>' ) {
+                ++on_spec; colons=0;
+            } else if( full_name[i] == '<' ) {
+                --on_spec; colons=0;
+            } else if( full_name[i] == ':' && !on_spec) {
+                if (++colons == 2)
+                    return full_name.substr(i+2);
+            } else {
+                colons = 0;
+            }
+        }
+        return full_name;
+    }
 
    const struct_def& abi_serializer::get_struct(const type_name& type)const {
-      auto itr = structs.find(resolve_type(type) );
-      FC_ASSERT( itr != structs.end(), "Unknown struct ${type}", ("type",type) );
+      auto name = remove_namespace(type);
+      auto itr = structs.find(resolve_type(name) );
+      FC_ASSERT( itr != structs.end(), "Unknown struct ${type}", ("type",name) );
       return itr->second;
    }
 
