@@ -10,7 +10,7 @@
 #include "stdio_impl.h"
 #include "shgetc.h"
 #include "intscan.h"
-#include "floatscan.h"
+//#include "floatscan.h"
 
 #define SIZE_hh -2
 #define SIZE_h  -1
@@ -148,8 +148,8 @@ int vfscanf(FILE *restrict f, const char *restrict fmt, va_list ap)
 			size = SIZE_L;
 			break;
 		case 'd': case 'i': case 'o': case 'u': case 'x':
-		case 'a': case 'e': case 'f': case 'g':
-		case 'A': case 'E': case 'F': case 'G': case 'X':
+//		case 'a': case 'e': case 'f': case 'g':
+//		case 'A': case 'E': case 'F': case 'G': case 'X':
 		case 's': case 'c': case '[':
 		case 'S': case 'C':
 		case 'p': case 'n':
@@ -295,6 +295,7 @@ int vfscanf(FILE *restrict f, const char *restrict fmt, va_list ap)
 			if (t=='p' && dest) *(void **)dest = (void *)(uintptr_t)x;
 			else store_int(dest, size, x);
 			break;
+/*
 		case 'a': case 'A':
 		case 'e': case 'E':
 		case 'f': case 'F':
@@ -313,6 +314,7 @@ int vfscanf(FILE *restrict f, const char *restrict fmt, va_list ap)
 				break;
 			}
 			break;
+*/
 		}
 
 		pos += shcnt(f);
