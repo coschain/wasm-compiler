@@ -17,7 +17,6 @@
 //#include <optional>
 #include <boost/assert.hpp>
 #include <iostream>
-#include <boost/property_tree/ptree.hpp>
 #include <nlohmann/json.hpp>
 
 
@@ -33,7 +32,6 @@
 
 namespace contento { namespace chain {
     using json = nlohmann::json;
-   using boost::property_tree::ptree;
 
    using std::vector;
    using std::string;
@@ -53,11 +51,6 @@ struct type_def {
 
    type_name   new_type_name;
    type_name   type;
-
-   void to_json(ptree& out){
-      out.put("new_type_name", new_type_name.c_str());
-      out.put("type", type);
-   }
     
     void to_json2(json& out) {
         out["new_type_name"] = new_type_name.c_str();
@@ -78,10 +71,6 @@ struct field_def {
       return std::tie(name, type) == std::tie(other.name, other.type);
    }
 
-   void to_json(ptree& out){
-      out.put("name", name);
-      out.put("type", type);
-   }
     void to_json2(json& out){
         out["name"] = name;
         out["type"] = type;
@@ -100,19 +89,6 @@ struct struct_def {
 
    bool operator==(const struct_def& other) const {
       return std::tie(name, base, fields) == std::tie(other.name, other.base, other.fields);
-   }
-
-   void to_json(ptree& out){
-      out.put("name", name);
-      out.put("base", base);
-
-      ptree ofields;
-      for(auto i : fields){
-         ptree ofield;
-         i.to_json(ofield);
-         ofields.push_back(std::make_pair("", ofield));
-      }
-      out.add_child("fields", ofields);
    }
     
     void to_json2(json& out){
@@ -137,11 +113,6 @@ struct action_def {
 
    action_name name;
    type_name   type;
-
-   void to_json(ptree& out){
-      out.put("name", name);
-      out.put("type", type);
-   }
     
     void to_json2(json& out){
         out["name"] = name;
@@ -159,25 +130,6 @@ struct action_def {
         type_name          type;  // the kind of index, i64, i128i128, etc
         vector<field_name> keys;   // names for the keys
         
-        void to_json(ptree& out){
-            out.put("name", name);
-            out.put("type", type);
-            
-            {
-                ptree obtrees;
-                for(int i=0;i<keys.size();i++){
-                    if (i == 0) {
-                        out.put("primary",keys[i]);
-                    } else {
-                        ptree obt;
-                        obt.put("", keys[i]);
-                        
-                        obtrees.push_back( std::make_pair("", obt) );
-                    }
-                }
-                out.add_child("secondary", obtrees);
-            }
-        }
         void to_json2(json& out){
             out["name"] = name;
             out["type"] = type;
@@ -227,47 +179,6 @@ struct abi_def {
    vector<error_message> error_messages;
    vector<table_def> tables;
    //extensions_type       abi_extensions;
-
-   void to_json(ptree& out){
-      out.put("version", version.c_str());
-
-      {
-         ptree obtrees;
-         for(auto i : types){
-            ptree otype;
-            i.to_json(otype);
-            obtrees.push_back(std::make_pair("", otype));
-         }
-         out.add_child("types", obtrees);
-      }
-      {
-         ptree obtrees;
-         for(auto i : structs){
-            ptree obtree;
-            i.to_json(obtree);
-            obtrees.push_back(std::make_pair("", obtree));
-         }
-         out.add_child("structs", obtrees);
-      }
-      {
-         ptree obtrees;
-         for(auto i : actions){
-            ptree obtree;
-            i.to_json(obtree);
-            obtrees.push_back(std::make_pair("", obtree));
-         }
-         out.add_child("actions", obtrees);
-      }
-       {
-           ptree obtrees;
-           for(auto i : tables){
-               ptree obtree;
-               i.to_json(obtree);
-               obtrees.push_back(std::make_pair("", obtree));
-           }
-           out.add_child("tables", obtrees);
-       }
-   }
     
     void to_json2(json& out){
         out["version"] = version.c_str();

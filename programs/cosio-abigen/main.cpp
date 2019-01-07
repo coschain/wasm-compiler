@@ -84,15 +84,6 @@ static cl::opt<bool> abi_opt_sfs(
     cl::desc("Optimize single field struct"),
     cl::cat(abi_generator_category));
 
-
-void write_json_data_into_string(boost::property_tree::ptree& item)
-{
-   std::stringstream is;
-   boost::property_tree::write_json(is,item);
-   std::string s = is.str();
-   cout<<"json s:"<<s<<endl;
-}
-
 int main(int argc, const char **argv) { abi_def output; try {
    CommonOptionsParser op(argc, argv, abi_generator_category);
    ClangTool Tool(op.getCompilations(), op.getSourcePathList());
@@ -105,12 +96,6 @@ int main(int argc, const char **argv) { abi_def output; try {
       if(!result) {
          abi_serializer(output).validate();
 
-          /*
-         boost::property_tree::ptree tree;
-
-         output.to_json(tree);
-         boost::property_tree::write_json(abi_destination,tree);
-           */
           json result;
           output.to_json2(result);
           std::ofstream os(abi_destination);
