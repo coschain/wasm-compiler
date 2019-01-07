@@ -18,6 +18,8 @@
 #include <boost/assert.hpp>
 #include <iostream>
 #include <boost/property_tree/ptree.hpp>
+#include <nlohmann/json.hpp>
+
 
 #define FC_ASSERT(x, ...) BOOST_ASSERT(x);
 #define FC_CAPTURE_AND_RETHROW(...)  \
@@ -30,6 +32,7 @@
    }
 
 namespace contento { namespace chain {
+    using json = nlohmann::json;
    using boost::property_tree::ptree;
 
    using std::vector;
@@ -55,6 +58,11 @@ struct type_def {
       out.put("new_type_name", new_type_name.c_str());
       out.put("type", type);
    }
+    
+    void to_json2(json& out) {
+        out["new_type_name"] = new_type_name.c_str();
+        out["type"] = type;
+    }
 };
 
 struct field_def {
@@ -74,6 +82,10 @@ struct field_def {
       out.put("name", name);
       out.put("type", type);
    }
+    void to_json2(json& out){
+        out["name"] = name;
+        out["type"] = type;
+    }
 };
 
 struct struct_def {
@@ -102,6 +114,19 @@ struct struct_def {
       }
       out.add_child("fields", ofields);
    }
+    
+    void to_json2(json& out){
+        out["name"] = name;
+        out["base"] = base;
+        
+        json ofields;
+        for(auto i : fields){
+            json ofield;
+            i.to_json2(ofield);
+            ofields.push_back(ofield);
+        }
+        out["fields"] = ofields;
+    }
 };
 
 struct action_def {
@@ -117,6 +142,11 @@ struct action_def {
       out.put("name", name);
       out.put("type", type);
    }
+    
+    void to_json2(json& out){
+        out["name"] = name;
+        out["type"] = type;
+    }
 };
     
     struct table_def {
@@ -146,6 +176,24 @@ struct action_def {
                     }
                 }
                 out.add_child("secondary", obtrees);
+            }
+        }
+        void to_json2(json& out){
+            out["name"] = name;
+            out["type"] = type;
+            
+            {
+                out["secondary"] = json::array();
+                for(int i=0;i<keys.size();i++){
+                    if (i == 0) {
+                        out["primary"] = keys[i];
+                    } else {
+                        //secondary remove first
+                        keys.erase(keys.begin());
+                        out["secondary"] = keys;
+                        break;
+                    }
+                }
             }
         }
         
@@ -220,6 +268,47 @@ struct abi_def {
            out.add_child("tables", obtrees);
        }
    }
+    
+    void to_json2(json& out){
+        out["version"] = version.c_str();
+        
+        {
+            json obtrees;
+            for(auto i : types){
+                json otype;
+                i.to_json2(otype);
+                obtrees.push_back(otype);
+            }
+            out["types"] = obtrees;
+        }
+        {
+            json obtrees;
+            for(auto i : structs){
+                json obtree;
+                i.to_json2(obtree);
+                obtrees.push_back(obtree);
+            }
+            out["structs"] = obtrees;
+        }
+        {
+            json obtrees;
+            for(auto i : actions){
+                json obtree;
+                i.to_json2(obtree);
+                obtrees.push_back(obtree);
+            }
+            out["actions"] = obtrees;
+        }
+        {
+            json obtrees;
+            for(auto i : tables){
+                json obtree;
+                i.to_json2(obtree);
+                obtrees.push_back(obtree);
+            }
+            out["tables"] = obtrees;
+        }
+    }
 };
 
 abi_def contento_contract_abi(const abi_def& contento_system_abi);

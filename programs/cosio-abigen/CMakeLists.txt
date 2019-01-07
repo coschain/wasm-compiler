@@ -8,7 +8,7 @@ add_executable(cosio-abigen ${SOURCES})
 set( CMAKE_CXX_STANDARD 14 )
 
 
-target_link_libraries(cosio-abigen abi_generator ${Boost_LIBRARIES})
+target_link_libraries(cosio-abigen abi_generator ${Boost_LIBRARIES} nlohmann_json::nlohmann_json)
 
 install( TARGETS
    cosio-abigen

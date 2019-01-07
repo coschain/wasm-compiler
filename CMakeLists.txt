@@ -69,6 +69,7 @@ add_subdirectory( externals )
 add_subdirectory( libraries )
 add_subdirectory( programs )
 add_subdirectory( contracts )
+add_subdirectory( json )
 
 MESSAGE( STATUS "\n\n             CONFIGURED FOR COS TOOLCHAIN                \n\n" )
 

@@ -16,6 +16,10 @@ target_include_directories(abi_generator
                            "${Boost_INCLUDE_DIR}"
                                   "${LLVM_INCLUDE_DIRS}")
 
+                              target_link_libraries(abi_generator
+                                  nlohmann_json::nlohmann_json
+                                  )
+
 target_link_libraries(abi_generator
   ${Boost_LIBRARIES}
   clangRewrite

@@ -7,6 +7,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/format.hpp>
+
 using namespace contento;
 using namespace contento::chain;
 
@@ -104,10 +105,16 @@ int main(int argc, const char **argv) { abi_def output; try {
       if(!result) {
          abi_serializer(output).validate();
 
+          /*
          boost::property_tree::ptree tree;
 
          output.to_json(tree);
          boost::property_tree::write_json(abi_destination,tree);
+           */
+          json result;
+          output.to_json2(result);
+          std::ofstream os(abi_destination);
+          os << std::setw(4) << result << std::endl;
       }
    }
    return result;
