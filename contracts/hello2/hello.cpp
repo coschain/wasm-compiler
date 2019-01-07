@@ -1,22 +1,23 @@
-
-// 步骤
-// mkdir build && cd build && cmake ../ && make 整个wasm-compiler 工程
-// 然后切换到 build/programs 目录下
-// 运行  ./cosiocc -g ../../contracts/hello2/hello.cpp.abi ../../contracts/hello2/hello.cpp
-
 #include <cosiolib/contract.hpp>
 #include <cosiolib/print.hpp>
+#include <string>
 
 using timestamp_t = uint64_t;
+using namespace std;
 
 // the database table record type
 struct greeting {
     cosio::account_name name;
     uint32_t count;
     timestamp_t last_seen;
+    string this_is_string;
+    cosio::contract_name c_name;
+    cosio::method_name m_name;
+    cosio::coin_amount amount;
+    cosio::bytes this_is_bytes;
     
     // record type must support serialization.
-    COSIO_SERIALIZE(greeting, (name)(count)(last_seen))
+    COSIO_SERIALIZE(greeting, (name)(count)(last_seen)(this_is_string)(c_name)(m_name)(amount)(this_is_bytes))
 };
 
 // the singleton record type, which must be derived from cosio::singleton_record.

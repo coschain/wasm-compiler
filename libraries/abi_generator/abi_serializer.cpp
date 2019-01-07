@@ -50,6 +50,10 @@ namespace contento { namespace chain {
       built_in_types.emplace("name",                      true);
       built_in_types.emplace("namex",                     true);
        built_in_types.emplace("cosio::account_name",                     true);
+       built_in_types.emplace("cosio::contract_name",                     true);
+       built_in_types.emplace("cosio::method_name",                     true);
+       built_in_types.emplace("cosio::coin_amount",                     true);
+       built_in_types.emplace("cosio::bytes",                     true);
       built_in_types.emplace("namex_",                    true);
       built_in_types.emplace("bytes",                     true);
       built_in_types.emplace("string",                    true);
