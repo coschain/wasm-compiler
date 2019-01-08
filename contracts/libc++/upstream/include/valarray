@@ -341,7 +341,7 @@ template <class T> unspecified2 end(const valarray<T>& v);
 
 #include <__config>
 #include <cstddef>
-#include <cmath>
+//#include <cmath>
 #include <initializer_list>
 #include <algorithm>
 #include <functional>
@@ -516,6 +516,7 @@ public:
         {return __f_(__x);}
 };
 
+/*
 template <class _Tp>
 struct __abs_expr : unary_function<_Tp, _Tp>
 {
@@ -643,6 +644,7 @@ struct __tanh_expr : unary_function<_Tp, _Tp>
     _Tp operator()(const _Tp& __x) const
         {return tanh(__x);}
 };
+*/
 
 template <class _ValExpr>
 class __slice_expr
