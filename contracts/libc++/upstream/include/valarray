@@ -4546,7 +4546,7 @@ operator>=(const typename _Expr::value_type& __x, const _Expr& __y)
     return __val_expr<_Op>(_Op(greater_equal<value_type>(),
                            __scalar_expr<value_type>(__x, __y.size()), __y));
 }
-
+/*
 template<class _Expr>
 inline _LIBCPP_INLINE_VISIBILITY
 typename enable_if
@@ -4834,6 +4834,7 @@ tanh(const _Expr& __x)
     typedef _UnaryOp<__tanh_expr<value_type>, _Expr> _Op;
     return __val_expr<_Op>(_Op(__tanh_expr<value_type>(), __x));
 }
+*/
 
 template <class _Tp>
 inline _LIBCPP_INLINE_VISIBILITY
