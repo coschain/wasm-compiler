@@ -48,7 +48,7 @@ namespace cosio {
         bytes args;
         int min_size = ::read_contract_op_params(nullptr, 0);
         if (min_size > 0) {
-            args.reserve(min_size);
+            args.resize(min_size);
             ::read_contract_op_params(args.data(), min_size);
         }
         return args;
@@ -101,17 +101,18 @@ namespace cosio {
 #define COSIO_API_CALL( r, TYPE, M ) \
 if ( method == BOOST_PP_STRINGIZE(M) ) { \
     cosio::execute_contract_method( &this_contract, &TYPE::M ); \
-    return; \
+    return 0; \
 }
 
 #define COSIO_API( TYPE, MEMBERS )  BOOST_PP_SEQ_FOR_EACH( COSIO_API_CALL, TYPE, MEMBERS )
 
 #define COSIO_ABI( TYPE, MEMBERS ) \
-extern "C" void COSIO_CONTRACT_ENTRY_NAME () { \
+extern "C" uint32_t COSIO_CONTRACT_ENTRY_NAME () { \
     BOOST_PP_SEQ_FOR_EACH( COSIO_API_CHECK, TYPE, MEMBERS ) \
     TYPE this_contract( cosio::get_contract_owner(), cosio::get_contract_name(), cosio::get_contract_caller() ); \
     cosio::method_name method = cosio::get_contract_method(); \
     COSIO_API( TYPE, MEMBERS ) \
     cosio::cosio_assert(false, std::string("unknown contract method: ") + method); \
+    return 1; \
 }
 

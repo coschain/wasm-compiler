@@ -59,7 +59,7 @@ public:
         // print something
         auto r = table_greetings.get(user);
         auto s = counter.get();
-        cosio::print("Hello %, we have met % times. I have greeted % persons, % greetings in total.", user, r.count, s.users, s.visits);
+        cosio::print_f("Hello %, we have met % times. I have greeted % persons, % greetings in total.", user, r.count, s.users, s.visits);
     }
 private:
     //

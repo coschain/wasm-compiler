@@ -15,7 +15,7 @@ namespace cosio {
         int size = ::read_from_storage((char*)key.c_str(), (int32_t)key.size(), nullptr, 0);
         value.clear();
         if (size > 0) {
-            value.reserve(size);
+            value.resize(size);
             ::read_from_storage((char*)key.c_str(), (int32_t)key.size(), (char*)value.data(), size);
         }
     }
