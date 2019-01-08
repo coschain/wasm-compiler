@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <wchar.h>
 #include <inttypes.h>
-#include <math.h>
 #include <float.h>
 
 /* Some useful macros */
