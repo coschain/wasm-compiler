@@ -48,12 +48,30 @@
                     "type":"cosio::account_name"
                 }
             ]
+        },
+        {
+            "name":"add",
+            "base":"",
+            "fields":[
+                {
+                    "name":"a",
+                    "type":"int32"
+                },
+                {
+                    "name":"b",
+                    "type":"int32"
+                }
+            ]
         }
     ],
     "actions":[
         {
             "name":"hi",
             "type":"hi"
+        },
+        {
+            "name":"add",
+            "type":"add"
         }
     ],
     "tables":[

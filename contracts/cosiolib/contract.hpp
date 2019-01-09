@@ -61,7 +61,21 @@ namespace cosio {
     inline coin_amount get_contract_sender_value() {
         return ::read_contract_sender_value();
     }
-    
+
+    inline void execute_contract(const account_name& owner, const contract_name& contract, const method_name& method, const bytes& params, coin_amount coins) {
+        return ::contract_call( 
+          (char*)owner.c_str(), (int)owner.size(), 
+          (char*)contract.c_str(), (int)contract.size(), 
+          (char*)method.c_str(), (int)method.size(), 
+          (char*)params.data(), (int)params.size(), 
+          coins );
+    }
+
+    template<typename...Args>
+    static void execute_contract( const account_name& owner, const contract_name& contract, const method_name& method, coin_amount coins, Args...args ) {
+        return execute_contract(owner, contract, method, pack(std::make_tuple(args...)), coins);
+    }
+
     ///////////////////////
     
     class contract {

@@ -211,6 +211,20 @@ extern "C" {
     int read_contract_caller(char* buf, int size);
 
     /**
+     Call other contract.
+     @param[in] owner the owner account name of target contract.
+     @param[in] owner_size length of @p owner.
+     @param[in] contract the name of target contract.
+     @param[in] contract_size length of @p contract.
+     @param[in] method the name of target method.
+     @param[in] method_size length of @p method.
+     @param[in] params the packed parameters data.
+     @param[in] params_size length of @p params.
+     @param[in] coins amount of coins to be sent to the target contract.
+     */
+    void contract_call(char *owner, int owner_size, char *contract, int contract_size, char *method, int method_size, char *params, int params_size, unsigned long long coins);
+
+    /**
      Transfer coins
      @param[in] to account name of receiver.
      @param[in] to_len length of @p to.
@@ -219,7 +233,6 @@ extern "C" {
      @param[in] memo_len length of @p memo.
      */
     void transfer( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
-    
     
 #ifdef __cplusplus
 }

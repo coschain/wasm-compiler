@@ -59,8 +59,16 @@ public:
         // print something
         auto r = table_greetings.get(user);
         auto s = counter.get();
-        cosio::print_f("Hello %, we have met % times. I have greeted % persons, % greetings in total.", user, r.count, s.users, s.visits);
+        cosio::print_f("Hello %, we have met % times. I have greeted % persons, % greetings in total.\n", user, r.count, s.users, s.visits);
+
+        // execute a contract. this contract's add(123456, 789).
+        cosio::execute_contract( this->owner(), this->name(), cosio::method_name("add"), 123456, 789 );
     }
+
+    void add(int32_t a, int32_t b) {
+        cosio::print_f("sum of % and % is %\n", a, b, a + b);
+    }
+
 private:
     //
     // define a class data member named "table_greetings" representing the database table which,
@@ -88,5 +96,5 @@ private:
     COSIO_DEFINE_NAMED_SINGLETON( counter, "global_counters", stats );
 };
 
-// declare that this contract is named "hello", and has 1 method named "hi".
-COSIO_ABI(hello, (hi))
+// declare that this contract is named "hello", and has 2 methods named "hi", "add".
+COSIO_ABI(hello, (hi)(add))
