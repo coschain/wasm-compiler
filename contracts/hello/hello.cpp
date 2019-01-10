@@ -62,7 +62,15 @@ public:
         cosio::print_f("Hello %, we have met % times. I have greeted % persons, % greetings in total.\n", user, r.count, s.users, s.visits);
 
         // execute a contract. this contract's add(123456, 789).
-        cosio::execute_contract( this->owner(), this->name(), cosio::method_name("add"), 123456, 789 );
+        cosio::execute_contract( 
+            this->owner(),                    // owner account of target contract
+            this->name(),                     // name of target contract
+            cosio::method_name("add"),        // name of target method
+            0,                                // amount of coins to transfer from current contract to target contract
+            123456, 789                       // variadic parameters for target method
+            );
+
+        cosio::print("Cool, I just called another contract :)\n");
     }
 
     void add(int32_t a, int32_t b) {
