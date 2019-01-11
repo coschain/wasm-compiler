@@ -27,16 +27,12 @@ namespace cosio {
         prints_l(&c, 1);
     }
     
-    inline void print(int32_t n) {
+    inline void print(int n) {
         ::print_int(n);
     }
     
     inline void print(int64_t n) {
         ::print_int(n);
-    }
-    
-    inline void print(uint32_t n) {
-        ::print_uint(n);
     }
     
     inline void print(uint64_t n) {
@@ -49,7 +45,7 @@ namespace cosio {
     
     template <typename T>
     inline void print(T&& obj) {
-        obj.print();
+        print(obj.string());
     }
     
     inline void print_f(const char *s) {
