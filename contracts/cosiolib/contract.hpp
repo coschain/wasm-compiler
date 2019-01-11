@@ -2,7 +2,7 @@
 
 #include <cosiolib/types.hpp>
 #include <cosiolib/assert.hpp>
-#include <cosiolib/system.h>
+#include <cosiolib/system.hpp>
 #include <cosiolib/serialize.hpp>
 #include <cosiolib/datastream.hpp>
 #include <cosiolib/table.hpp>
@@ -16,79 +16,15 @@
 
 namespace cosio {
     
-    inline account_name get_contract_owner() {
-        char buf[COSIO_MAX_ACCOUNT_NAME_SIZE + 1];
-        memset(buf, 0, COSIO_MAX_ACCOUNT_NAME_SIZE + 1);
-        ::read_contract_owner(buf, COSIO_MAX_ACCOUNT_NAME_SIZE + 1);
-        return account_name((const char*)buf);
-    }
-    
-    inline contract_name get_contract_name() {
-        char buf[COSIO_MAX_CONTRACT_NAME_SIZE + 1];
-        memset(buf, 0, COSIO_MAX_CONTRACT_NAME_SIZE + 1);
-        ::read_contract_name(buf, COSIO_MAX_CONTRACT_NAME_SIZE + 1);
-        return contract_name((const char*)buf);
-    }
-    
-    inline account_name get_contract_caller() {
-        char buf[COSIO_MAX_ACCOUNT_NAME_SIZE + 1];
-        memset(buf, 0, COSIO_MAX_ACCOUNT_NAME_SIZE + 1);
-        ::read_contract_caller(buf, COSIO_MAX_ACCOUNT_NAME_SIZE + 1);
-        return account_name((const char*)buf);
-    }
-    
-    inline method_name get_contract_method() {
-        char buf[COSIO_MAX_METHOD_NAME_SIZE + 1];
-        memset(buf, 0, COSIO_MAX_METHOD_NAME_SIZE + 1);
-        ::read_contract_method(buf, COSIO_MAX_METHOD_NAME_SIZE + 1);
-        return method_name((const char*)buf);
-    }
-    
-    inline bytes get_contract_args() {
-        bytes args;
-        int min_size = ::read_contract_op_params(nullptr, 0);
-        if (min_size > 0) {
-            args.resize(min_size);
-            ::read_contract_op_params(args.data(), min_size);
-        }
-        return args;
-    }
-    
-    inline coin_amount get_contract_balance(account_name owner, contract_name contract) {
-        return ::get_contract_balance((char*)owner.c_str(), (int)owner.size(), (char*)contract.c_str(), (int)contract.size());
-    }
-    
-    inline coin_amount get_contract_sender_value() {
-        return ::read_contract_sender_value();
-    }
-
-    inline void execute_contract(const account_name& owner, const contract_name& contract, const method_name& method, const bytes& params, coin_amount coins) {
-        return ::contract_call( 
-          (char*)owner.c_str(), (int)owner.size(), 
-          (char*)contract.c_str(), (int)contract.size(), 
-          (char*)method.c_str(), (int)method.size(), 
-          (char*)params.data(), (int)params.size(), 
-          coins );
-    }
-
-    template<typename...Args>
-    static void execute_contract( const account_name& owner, const contract_name& contract, const method_name& method, coin_amount coins, Args...args ) {
-        return execute_contract(owner, contract, method, pack(std::make_tuple(args...)), coins);
-    }
-
-    ///////////////////////
-    
     class contract {
     public:
-        contract(const account_name& owner, const contract_name& name, const account_name& caller):
-            _owner(owner), _name(name), _caller(caller) { }
-        const account_name& owner() const { return _owner; }
-        const contract_name& name() const { return _name; }
-        const account_name& caller() const { return _caller; }
+        contract(const name& name, const name& caller):
+            _name(name), _caller(caller) { }
+        const name& name() const { return _name; }
+        const name& caller() const { return _caller; }
     private:
-        account_name _owner;
-        contract_name _name;
-        account_name _caller;
+        name _name;
+        name _caller;
     };
     
     template<typename T, typename...Args>
@@ -123,8 +59,8 @@ if ( method == BOOST_PP_STRINGIZE(M) ) { \
 #define COSIO_ABI( TYPE, MEMBERS ) \
 extern "C" uint32_t COSIO_CONTRACT_ENTRY_NAME () { \
     BOOST_PP_SEQ_FOR_EACH( COSIO_API_CHECK, TYPE, MEMBERS ) \
-    TYPE this_contract( cosio::get_contract_owner(), cosio::get_contract_name(), cosio::get_contract_caller() ); \
-    cosio::method_name method = cosio::get_contract_method(); \
+    TYPE this_contract( cosio::get_contract_name(), cosio::get_contract_caller() ); \
+    auto method = cosio::get_contract_method(); \
     COSIO_API( TYPE, MEMBERS ) \
     cosio::cosio_assert(false, std::string("unknown contract method: ") + method); \
     return 1; \

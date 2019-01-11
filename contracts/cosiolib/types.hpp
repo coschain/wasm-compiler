@@ -7,11 +7,8 @@
 #define ALIGNED(X) __attribute__ ((aligned (16))) X
 
 namespace cosio {
-    using account_name = std::string;
-    using contract_name = std::string;
-    using method_name = std::string;
-    
     using coin_amount = uint64_t;
+    using bytes = std::vector<char>;
     
     struct ALIGNED(checksum256) {
         uint8_t hash[32];
@@ -24,8 +21,6 @@ namespace cosio {
     struct ALIGNED(checksum512) {
         uint8_t hash[64];
     };
-    
-    using bytes = std::vector<char>;
     
     class name {
         constexpr static char COSIO_CONTRACT_NAME_PREFIX_CHAR = '$';
@@ -45,18 +40,22 @@ namespace cosio {
         name(const char* s) {
             set_string(s);
         }
+        
+        name(const std::string& owner, const std::string& contract) {
+            set_contract(owner, contract);
+        }
     
         void set_name(const name& other) {
             _name = other._name;
             _split = other._split;
         }
         
-        void set_account(const account_name& account) {
+        void set_account(const std::string& account) {
             _name = account;
             _split = std::string::npos;
         }
         
-        void set_contract(const account_name& owner, const contract_name& contract) {
+        void set_contract(const std::string& owner, const std::string& contract) {
             _name = COSIO_CONTRACT_NAME_PREFIX_CHAR + contract + COSIO_CONTRACT_NAME_SPLIT_CHAR + owner;
             _split = 1 + contract.size();
         }
@@ -81,11 +80,11 @@ namespace cosio {
             && _name[_split] == COSIO_CONTRACT_NAME_SPLIT_CHAR;
         }
         
-        account_name account() const {
+        std::string account() const {
             return is_contract()? _name.substr(_split + 1) : _name;
         }
         
-        contract_name contract() const {
+        std::string contract() const {
             return is_contract()? _name.substr(1, _split - 1) : "";
         }
         
@@ -107,6 +106,10 @@ namespace cosio {
             return *this;
         }
         
+        bool operator == (const name& other) {
+            return _name == other._name;
+        }
+        
         template<typename DataStream>
         friend DataStream& operator << (DataStream& ds, const name& n) {
             return ds << n.string();
@@ -126,7 +129,3 @@ namespace cosio {
     };
     
 }
-
-#define COSIO_MAX_ACCOUNT_NAME_SIZE     16
-#define COSIO_MAX_CONTRACT_NAME_SIZE    128
-#define COSIO_MAX_METHOD_NAME_SIZE      128
