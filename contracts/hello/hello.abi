@@ -13,7 +13,7 @@
             "fields":[
                 {
                     "name":"name",
-                    "type":"cosio::account_name"
+                    "type":"cosio::name"
                 },
                 {
                     "name":"count",
@@ -45,7 +45,7 @@
             "fields":[
                 {
                     "name":"user",
-                    "type":"cosio::account_name"
+                    "type":"cosio::name"
                 }
             ]
         },
