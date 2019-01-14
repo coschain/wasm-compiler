@@ -83,26 +83,6 @@ extern "C" {
     unsigned long long get_contract_balance(char* owner, int owner_len, char* contract, int contract_len);
     
     /**
-     Write a key-value pair to database.
-     @param[in] key the buffer storing bytes of the key.
-     @param[in] key_size number of bytes of the key.
-     @param[in] value the buffer storing bytes of the value.
-     @param[in] value_size number of bytes of the value.
-     */
-    void save_to_storage(char* key, int key_size, char* value, int value_size);
-    
-    /**
-     Read value from database for specific key.
-     @param[in] key the buffer storing bytes of the querying key.
-     @param[in] key_size number of bytes of the querying key.
-     @param[in,out] value the buffer to which value bytes are stored.
-     @param[in] value_size the capacity of @p value, in bytes.
-     @return if @p value_size is positive, return the number of bytes written to @p value.
-     if @p value_size is zero or negative, return the actual length of value without changing @p value.
-     */
-    int read_from_storage(char* key, int key_size, char* value, int value_size);
-
-    /**
      Query a record in a database table.
      @param[in] table_name name of the table.
      @param[in] table_name_len length of @p table_name.
