@@ -156,6 +156,7 @@ inline datastream<Stream>& operator>>(datastream<Stream>& ds, bool& d) {
  */
 template<typename Stream>
     inline datastream<Stream>& operator<<(datastream<Stream>& ds, const cosio::checksum256& d) {
+   ds << unsigned_int( sizeof(d.hash) );
    ds.write( (const char*)&d.hash[0], sizeof(d.hash) );
    return ds;
 }
@@ -167,6 +168,9 @@ template<typename Stream>
  */
 template<typename Stream>
 inline datastream<Stream>& operator>>(datastream<Stream>& ds, cosio::checksum256& d) {
+    unsigned_int s;
+    ds >> s;
+    cosio_assert( sizeof(d.hash) == s.value, "cosio::checksum256 size and unpacked size don't match");
    ds.read((char*)&d.hash[0], sizeof(d.hash) );
    return ds;
 }
@@ -469,27 +473,35 @@ cosio::bytes pack( const T& value ) {
 }
 
 template<typename Stream>
-    inline datastream<Stream>& operator<<(datastream<Stream>& ds, const cosio::checksum160& cs) {
-   ds.write((const char*)&cs.hash[0], sizeof(cs.hash));
-   return ds;
+inline datastream<Stream>& operator<<(datastream<Stream>& ds, const cosio::checksum160& cs) {
+    ds << unsigned_int( sizeof(cs.hash) );
+    ds.write((const char*)&cs.hash[0], sizeof(cs.hash));
+    return ds;
 }
 
 template<typename Stream>
 inline datastream<Stream>& operator>>(datastream<Stream>& ds, cosio::checksum160& cs) {
-   ds.read((char*)&cs.hash[0], sizeof(cs.hash));
-   return ds;
+    unsigned_int s;
+    ds >> s;
+    cosio_assert( sizeof(cs.hash) == s.value, "cosio::checksum160 size and unpacked size don't match");
+    ds.read((char*)&cs.hash[0], sizeof(cs.hash));
+    return ds;
 }
 
 template<typename Stream>
 inline datastream<Stream>& operator<<(datastream<Stream>& ds, const cosio::checksum512& cs) {
-   ds.write((const char*)&cs.hash[0], sizeof(cs.hash));
-   return ds;
+    ds << unsigned_int( sizeof(cs.hash) );
+    ds.write((const char*)&cs.hash[0], sizeof(cs.hash));
+    return ds;
 }
 
 template<typename Stream>
 inline datastream<Stream>& operator>>(datastream<Stream>& ds, cosio::checksum512& cs) {
-   ds.read((char*)&cs.hash[0], sizeof(cs.hash));
-   return ds;
+    unsigned_int s;
+    ds >> s;
+    cosio_assert( sizeof(cs.hash) == s.value, "cosio::checksum512 size and unpacked size don't match");
+    ds.read((char*)&cs.hash[0], sizeof(cs.hash));
+    return ds;
 }
 
 }

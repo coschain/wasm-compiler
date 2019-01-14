@@ -66,12 +66,12 @@ namespace cosio {
         cosio_assert(contract.is_contract(), "invalid contract name: " + contract.string());
         std::string owner = contract.account();
         std::string name = contract.contract();
-        return ::get_contract_balance((char*)owner.c_str(), (int)owner.size(), (char*)name.c_str(), (int)name.size());
+        return ::get_contract_balance((char*)name.c_str(), (int)name.size(), (char*)owner.c_str(), (int)owner.size());
     }
     
     inline coin_amount get_user_balance(const name& user) {
         cosio_assert(!user.is_contract(), "invalid account name: " + user.string());
-        return ::get_balance_by_name((char*)user.string().c_str(), (int)user.string().size());
+        return ::get_user_balance((char*)user.string().c_str(), (int)user.string().size());
     }
     
     inline coin_amount get_balance(const name& who) {

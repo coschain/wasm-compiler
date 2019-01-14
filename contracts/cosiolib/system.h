@@ -70,7 +70,7 @@ extern "C" {
      @param[in] length the length of @p name.
      @return the balance of account @p name, in coins. If the account doesn't exist, abort execution.
      */
-    unsigned long long get_balance_by_name(char* name, int length);
+    unsigned long long get_user_balance(char* name, int length);
     
     /**
      Get balance of specific contract.
