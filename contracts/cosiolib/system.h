@@ -261,13 +261,15 @@ extern "C" {
     
     /**
      Transfer coins to specified contract.
-     @param[in] to name of receiver contract.
-     @param[in] to_len length of @p to.
+     @param[in] to_owner owner account name of receiver contract.
+     @param[in] to_owner_len length of @p to_owner.
+     @param[in] to_contract name of receiver contract.
+     @param[in] to_contract_len length of @p to.
      @param[in] amount number of coins to transfer.
      @param[in] memo a memo string.
      @param[in] memo_len length of @p memo.
      */
-    void transfer_to_contract( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
+    void transfer_to_contract( char* to_owner, int to_owner_len, char* to_contract, int to_contract_len, unsigned long long amount, char* memo, int memo_len);
     
 #ifdef __cplusplus
 }

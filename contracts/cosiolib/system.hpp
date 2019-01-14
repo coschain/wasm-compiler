@@ -95,7 +95,9 @@ namespace cosio {
     
     inline void transfer_to_contract(const name& to, coin_amount amount, const std::string& memo) {
         cosio_assert(to.is_contract(), "invalid contract name: " + to.string());
-        ::transfer_to_contract((char*)to.string().c_str(), (int)to.string().size(), amount, (char*)memo.c_str(), (int)memo.size());
+        std::string owner = to.account();
+        std::string name = to.contract();
+        ::transfer_to_contract((char*)owner.c_str(), (int)owner.size(), (char*)name.c_str(), (int)name.size(), amount, (char*)memo.c_str(), (int)memo.size());
     }
     
     inline void transfer_to(const name& to, coin_amount amount, const std::string& memo) {
