@@ -18,10 +18,10 @@ namespace cosio {
     
     class contract {
     public:
-        contract(const name& name, const name& caller):
-            _name(name), _caller(caller) { }
-        const name& name() const { return _name; }
-        const name& caller() const { return _caller; }
+        contract(const name& me, const name& caller):
+            _name(me), _caller(caller) { }
+        const name& get_name() const { return _name; }
+        const name& get_caller() const { return _caller; }
     private:
         name _name;
         name _caller;

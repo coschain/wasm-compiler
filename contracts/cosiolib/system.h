@@ -211,6 +211,31 @@ extern "C" {
     int read_contract_caller(char* buf, int size);
 
     /**
+     Return whether the contract was called directly by a user.
+     @return 1 if called directly by a user, or 1 if called by a contract.
+     */
+    int contract_called_by_user();
+    
+    /**
+     Get the owner account name of the calling contract.
+     @param[in,out] buf the buffer to which name is stored.
+     @param[in] size capacity of @p buf, in bytes.
+     @return if @p size is positive, return the number of bytes written to @p buf.
+     if @p size is zero or negative, return the length of owner account name.
+     if current contract was directly called by a user, returns 0 without writing anything to @p buf.
+     */
+    int read_calling_contract_owner(char *buf, int size);
+    
+    /**
+     Get the name of the calling contract.
+     @param[in,out] buf the buffer to which name is stored.
+     @param[in] size capacity of @p buf, in bytes.
+     @return if @p size is positive, return the number of bytes written to @p buf.
+     if @p size is zero or negative, return the length of calling contract name.
+     */
+    int read_calling_contract_name(char *buf, int size);
+    
+    /**
      Call other contract.
      @param[in] owner the owner account name of target contract.
      @param[in] owner_size length of @p owner.
@@ -225,14 +250,24 @@ extern "C" {
     void contract_call(char *owner, int owner_size, char *contract, int contract_size, char *method, int method_size, char *params, int params_size, unsigned long long coins);
 
     /**
-     Transfer coins
+     Transfer coins to specified user.
      @param[in] to account name of receiver.
      @param[in] to_len length of @p to.
      @param[in] amount number of coins to transfer.
      @param[in] memo a memo string.
      @param[in] memo_len length of @p memo.
      */
-    void transfer( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
+    void transfer_to_user( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
+    
+    /**
+     Transfer coins to specified contract.
+     @param[in] to name of receiver contract.
+     @param[in] to_len length of @p to.
+     @param[in] amount number of coins to transfer.
+     @param[in] memo a memo string.
+     @param[in] memo_len length of @p memo.
+     */
+    void transfer_to_contract( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
     
 #ifdef __cplusplus
 }

@@ -3,6 +3,7 @@
 #include <cosiolib/system.h>
 #include <cosiolib/types.hpp>
 #include <cosiolib/assert.hpp>
+#include <cosiolib/datastream.hpp>
 
 namespace cosio {
     
@@ -62,15 +63,15 @@ namespace cosio {
     }
     
     inline coin_amount get_contract_balance(const name& contract) {
-        cosio_assert(contract.is_contract(), "invalid contract name: " + contract);
+        cosio_assert(contract.is_contract(), "invalid contract name: " + contract.string());
         std::string owner = contract.account();
         std::string name = contract.contract();
         return ::get_contract_balance((char*)owner.c_str(), (int)owner.size(), (char*)name.c_str(), (int)name.size());
     }
     
     inline coin_amount get_user_balance(const name& user) {
-        cosio_assert(!user.is_contract(), "invalid account name: " + user);
-        return ::get_balance_by_name((char*)user.c_str(), (int)user.size());
+        cosio_assert(!user.is_contract(), "invalid account name: " + user.string());
+        return ::get_balance_by_name((char*)user.string().c_str(), (int)user.string().size());
     }
     
     inline coin_amount get_balance(const name& who) {
@@ -83,18 +84,18 @@ namespace cosio {
     
     inline void require_auth(const name& who) {
         return who.is_contract()?
-            cosio_assert( who == get_contract_name() || who == get_contract_caller(), "no authority of contract: " + who):
-            ::require_auth((char*)who.c_str(), (int)who.size());
+            cosio_assert( who == get_contract_name() || who == get_contract_caller(), "no authority of contract: " + who.string()):
+            ::require_auth((char*)who.string().c_str(), (int)who.string().size());
     }
 
     inline void transfer_to_user(const name& to, coin_amount amount, const std::string& memo) {
-        cosio_assert(!to.is_contract(), "invalid user name: " + to);
-        ::transfer_to_user((char*)to.c_str(), (int)to.size(), amount, (char*)memo.c_str(), (int)memo.size());
+        cosio_assert(!to.is_contract(), "invalid user name: " + to.string());
+        ::transfer_to_user((char*)to.string().c_str(), (int)to.string().size(), amount, (char*)memo.c_str(), (int)memo.size());
     }
     
     inline void transfer_to_contract(const name& to, coin_amount amount, const std::string& memo) {
-        cosio_assert(to.is_contract(), "invalid contract name: " + to);
-        ::transfer_to_contract((char*)to.c_str(), (int)to.size(), amount, (char*)memo.c_str(), (int)memo.size());
+        cosio_assert(to.is_contract(), "invalid contract name: " + to.string());
+        ::transfer_to_contract((char*)to.string().c_str(), (int)to.string().size(), amount, (char*)memo.c_str(), (int)memo.size());
     }
     
     inline void transfer_to(const name& to, coin_amount amount, const std::string& memo) {
@@ -102,7 +103,7 @@ namespace cosio {
     }
     
     inline void execute_contract(const name& contract, const std::string& method, const bytes& params, coin_amount coins) {
-        cosio_assert(contract.is_contract(), "invalid contract name: " + contract);
+        cosio_assert(contract.is_contract(), "invalid contract name: " + contract.string());
         std::string owner = contract.account();
         std::string name = contract.contract();
         return ::contract_call(

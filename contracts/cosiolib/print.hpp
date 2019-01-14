@@ -23,12 +23,28 @@ namespace cosio {
         prints_l(str.c_str(), str.size());
     }
     
-    inline void print(const char c) {
+    inline void print(char c) {
         prints_l(&c, 1);
     }
     
-    inline void print(int n) {
+    inline void print(uint8_t n) {
+        ::print_uint(n);
+    }
+    
+    inline void print(int16_t n) {
         ::print_int(n);
+    }
+    
+    inline void print(uint16_t n) {
+        ::print_uint(n);
+    }
+    
+    inline void print(int32_t n) {
+        ::print_int(n);
+    }
+    
+    inline void print(uint32_t n) {
+        ::print_uint(n);
     }
     
     inline void print(int64_t n) {

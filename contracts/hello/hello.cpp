@@ -5,7 +5,7 @@ using timestamp_t = uint64_t;
 
 // the database table record type
 struct greeting {
-    cosio::account_name name;
+    cosio::name name;
     uint32_t count;
     timestamp_t last_seen;
     
@@ -29,7 +29,7 @@ class hello : public cosio::contract {
 public:
     using cosio::contract::contract;
 
-    void hi( cosio::account_name user ) {
+    void hi( cosio::name user ) {
         
         // load the global counter
         counter.get_or_create();
@@ -59,13 +59,12 @@ public:
         // print something
         auto r = table_greetings.get(user);
         auto s = counter.get();
-        cosio::print_f("Hello %, we have met % times. I have greeted % persons, % greetings in total.\n", user, r.count, s.users, s.visits);
+        cosio::print_f("Hello %, we have met % times. I have greeted % persons, % greetings in total.\n", user.string(), r.count, s.users, s.visits);
 
         // execute a contract. this contract's add(123456, 789).
         cosio::execute_contract( 
-            this->owner(),                    // owner account of target contract
-            this->name(),                     // name of target contract
-            cosio::method_name("add"),        // name of target method
+            this->get_name(),                     // name of target contract
+            "add",                            // name of target method
             0,                                // amount of coins to transfer from current contract to target contract
             123456, 789                       // variadic parameters for target method
             );

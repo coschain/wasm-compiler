@@ -106,7 +106,7 @@ namespace cosio {
             return *this;
         }
         
-        bool operator == (const name& other) {
+        bool operator == (const name& other) const {
             return _name == other._name;
         }
         
