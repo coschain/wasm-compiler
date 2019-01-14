@@ -1,0 +1,141 @@
+{
+    "version":"cosio::abi/1.0",
+    "types":[
+        {
+            "new_type_name":"team",
+            "type":"player[]"
+        }
+    ],
+    "structs":[
+        {
+            "name":"test_print",
+            "base":"",
+            "fields":[
+                
+            ]
+        },
+        {
+            "name":"test_chain_info",
+            "base":"",
+            "fields":[
+                
+            ]
+        },
+        {
+            "name":"inline_target",
+            "base":"",
+            "fields":[
+                
+            ]
+        },
+        {
+            "name":"test_sha256",
+            "base":"",
+            "fields":[ 
+                {
+                    "name": "s",
+                    "type": "std::string"
+                }
+            ]
+        },
+        {
+            "name":"contract_info",
+            "base":"",
+            "fields":[ 
+                {
+                    "name": "owner",
+                    "type": "std::string"
+                },
+                {
+                    "name": "name",
+                    "type": "std::string"
+                }
+            ]
+        },
+        {
+            "name":"test_arg",
+            "base":"",
+            "fields":[
+                {
+                    "name": "t",
+                    "type": "team"
+                }
+            ]
+        },
+        {
+            "name":"player",
+            "base":"student",
+            "fields":[
+                {
+                    "name": "game",
+                    "type": "std::string"
+                }
+            ]
+        },
+        {
+            "name":"student",
+            "base":"",
+            "fields":[
+                {
+                    "name": "name",
+                    "type": "std::string"
+                },
+                {
+                    "name": "age",
+                    "type": "uint32"
+                },
+                {
+                    "name": "gender",
+                    "type": "bool"
+                },
+                {
+                    "name": "courses",
+                    "type": "course[]"
+                }
+            ]
+        },
+        {
+            "name":"course",
+            "base":"",
+            "fields":[
+                {
+                    "name": "name",
+                    "type": "std::string"
+                },
+                {
+                    "name": "credit",
+                    "type": "uint32"
+                }
+            ]
+        }
+    ],
+    "actions":[
+        {
+            "name":"test_print",
+            "type":"test_print"
+        },
+        {
+            "name":"test_chain_info",
+            "type":"test_chain_info"
+        },
+        {
+            "name":"test_sha256",
+            "type":"test_sha256"
+        },
+        {
+            "name":"contract_info",
+            "type":"contract_info"
+        },
+        {
+            "name":"inline_target",
+            "type":"inline_target"
+        },
+        {
+            "name":"test_arg",
+            "type":"test_arg"
+        }
+    ],
+    "tables":[
+        
+    ]
+}
