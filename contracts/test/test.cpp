@@ -103,6 +103,15 @@ public:
             cosio::print(")\n");
         }
     }
+
+    // if using wallet-cli, try following method parameters,
+    // - empty map: [[]]
+    // - a map consisting of maths and arts: [[[\"maths\",[\"maths\",10]],[\"arts\",[\"arts\",20]]]]
+    void test_map_arg(std::map<std::string, course> cm) {
+        for (auto it = cm.begin(); it != cm.end(); it++) {
+            cosio::print_f("%: (%, %)\n", it->first, it->second.name, it->second.credit);
+        }
+    }
     
 private:
     
@@ -115,4 +124,5 @@ COSIO_ABI(test,
           (contract_info)
           (inline_target)
           (test_arg)
+          (test_map_arg)
 )

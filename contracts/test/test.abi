@@ -107,6 +107,16 @@
                     "type": "uint32"
                 }
             ]
+        },
+        {
+            "name":"test_map_arg",
+            "base":"",
+            "fields":[
+                {
+                    "name": "cm",
+                    "type": "{std::string,course}"
+                }
+            ]
         }
     ],
     "actions":[
@@ -133,6 +143,10 @@
         {
             "name":"test_arg",
             "type":"test_arg"
+        },
+        {
+            "name":"test_map_arg",
+            "type":"test_map_arg"
         }
     ],
     "tables":[
