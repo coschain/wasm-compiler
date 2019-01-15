@@ -7,12 +7,12 @@ using namespace std;
 
 // the database table record type
 struct greeting {
-    cosio::account_name name;
+    cosio::name name;
     uint32_t count;
     timestamp_t last_seen;
     string this_is_string;
-    cosio::contract_name c_name;
-    cosio::method_name m_name;
+    cosio::name c_name;
+    cosio::name m_name;
     cosio::coin_amount amount;
     cosio::bytes this_is_bytes;
     
@@ -36,7 +36,7 @@ class hello : public cosio::contract {
 public:
     using cosio::contract::contract;
 
-    void hi( cosio::account_name user ) {
+    void hi( cosio::name user ) {
         
         // load the global counter
         counter.get_or_create();

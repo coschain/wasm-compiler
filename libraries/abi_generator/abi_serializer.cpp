@@ -47,7 +47,7 @@ namespace contento { namespace chain {
       built_in_types.emplace("time_point_sec",            true);
       //built_in_types.emplace("block_timestamp_type",      pack_unpack<block_timestamp_type>());
 
-      built_in_types.emplace("name",                      true);
+      built_in_types.emplace("cosio::name",                      true);
       built_in_types.emplace("namex",                     true);
        built_in_types.emplace("cosio::account_name",                     true);
        built_in_types.emplace("cosio::contract_name",                     true);

@@ -692,9 +692,7 @@ namespace contento { namespace chain {
    vector<type_def> common_type_defs() {
       vector<type_def> types;
 
-       types.push_back( type_def{"account_name", "cosio::account_name"} );
-       types.push_back( type_def{"contract_name", "cosio::contract_name"} );
-       types.push_back( type_def{"method_name", "cosio::method_name"} );
+       types.push_back( type_def{"name", "cosio::name"} );
        types.push_back( type_def{"coin_amount", "cosio::coin_amount"} );
        types.push_back( type_def{"bytes", "cosio::bytes"} );
       //    types.push_back( type_def{"account_name2", "namex"} );
