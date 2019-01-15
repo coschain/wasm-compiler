@@ -333,7 +333,8 @@ template<typename DataStream, typename K, typename V>
 DataStream& operator << ( DataStream& ds, const std::map<K,V>& m ) {
    ds << unsigned_int( m.size() );
    for( const auto& i : m ) {
-      ds << i.first << i.second;
+       ds << unsigned_int(2);
+       ds << i.first << i.second;
    }
    return ds;
 }
@@ -344,9 +345,12 @@ DataStream& operator >> ( DataStream& ds, std::map<K,V>& m ) {
    unsigned_int s; ds >> s;
 
    for (uint32_t i = 0; i < s.value; ++i) {
-      K k; V v;
-      ds >> k >> v;
-      m.emplace( std::move(k), std::move(v) );
+       K k; V v;
+       unsigned_int c;
+       ds >> c;
+       cosio_assert( 2 == c.value, "invalid map kv-pair data.");
+       ds >> k >> v;
+       m.emplace( std::move(k), std::move(v) );
    }
    return ds;
 }
@@ -376,8 +380,10 @@ DataStream& operator >> ( DataStream& ds, boost::container::flat_set<T>& s ) {
 template<typename DataStream, typename K, typename V>
 DataStream& operator<<( DataStream& ds, const boost::container::flat_map<K,V>& m ) {
    ds << unsigned_int( m.size() );
-   for( const auto& i : m )
-      ds << i.first << i.second;
+    for( const auto& i : m ) {
+        ds << unsigned_int(2);
+        ds << i.first << i.second;
+    }
    return ds;
 }
 
@@ -387,9 +393,12 @@ DataStream& operator>>( DataStream& ds, boost::container::flat_map<K,V>& m ) {
    unsigned_int s; ds >> s;
 
    for( uint32_t i = 0; i < s.value; ++i ) {
-      K k; V v;
-      ds >> k >> v;
-      m.emplace( std::move(k), std::move(v) );
+       K k; V v;
+       unsigned_int c;
+       ds >> c;
+       cosio_assert( 2 == c.value, "invalid map kv-pair data.");
+       ds >> k >> v;
+       m.emplace( std::move(k), std::move(v) );
    }
    return ds;
 }
