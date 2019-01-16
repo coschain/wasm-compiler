@@ -69,10 +69,7 @@ bool abi_generator::is_builtin_type(const string& type_name) {
 string abi_generator::translate_type(const string& type_name) {
   string built_in_type = type_name;
 
-  if (type_name == "unsigned __int128" || type_name == "uint128_t") built_in_type = "uint128";
-  else if (type_name == "__int128"          || type_name == "int128_t")  built_in_type = "int128";
-
-  else if (type_name == "unsigned long long" || type_name == "uint64_t") built_in_type = "uint64";
+  if (type_name == "unsigned long long" || type_name == "uint64_t") built_in_type = "uint64";
   else if (type_name == "unsigned long"      || type_name == "uint32_t") built_in_type = "uint32";
   else if (type_name == "unsigned short"     || type_name == "uint16_t") built_in_type = "uint16";
   else if (type_name == "unsigned char"      || type_name == "uint8_t")  built_in_type = "uint8";
@@ -81,7 +78,6 @@ string abi_generator::translate_type(const string& type_name) {
   else if (type_name == "long"               || type_name == "int32_t")  built_in_type = "int32";
   else if (type_name == "short"              || type_name == "int16_t")  built_in_type = "int16";
   else if (type_name == "char"               || type_name == "int8_t")   built_in_type = "int8";
-  else if (type_name == "double")   built_in_type = "float64";
   else {
      static auto types = contento::chain::common_type_defs();
      auto itr = std::find_if( types.begin(), types.end(),
@@ -695,13 +691,10 @@ namespace contento { namespace chain {
        types.push_back( type_def{"name", "cosio::name"} );
        types.push_back( type_def{"coin_amount", "cosio::coin_amount"} );
        types.push_back( type_def{"bytes", "cosio::bytes"} );
-      //    types.push_back( type_def{"account_name2", "namex"} );
-      types.push_back( type_def{"permission_name", "name"} );
-      types.push_back( type_def{"action_name", "name"} );
-      types.push_back( type_def{"table_name", "name"} );
-      types.push_back( type_def{"transaction_id_type", "checksum256"} );
-      types.push_back( type_def{"block_id_type", "checksum256"} );
-      types.push_back( type_def{"weight_type", "uint16"} );
+       types.push_back( type_def{"string", "std::string"} );
+       types.push_back( type_def{"checksum160", "cosio::checksum160"} );
+       types.push_back( type_def{"checksum256", "cosio::checksum256"} );
+       types.push_back( type_def{"checksum512", "cosio::checksum512"} );
 
       return types;
    }

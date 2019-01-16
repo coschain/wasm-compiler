@@ -33,37 +33,16 @@ namespace contento { namespace chain {
       built_in_types.emplace("uint32",                    true);
       built_in_types.emplace("int64",                     true);
       built_in_types.emplace("uint64",                    true);
-      built_in_types.emplace("int128",                    true);
-      built_in_types.emplace("uint128",                   true);
-      built_in_types.emplace("varint32",                  true);
-      built_in_types.emplace("varuint32",                 true);
-
-      // TODO: Add proper support for floating point types. For now this is good enough.
-      built_in_types.emplace("float32",                   true);
-      built_in_types.emplace("float64",                   true);
-      built_in_types.emplace("float128",                  true);
-
-      built_in_types.emplace("time_point",                true);
-      built_in_types.emplace("time_point_sec",            true);
-      //built_in_types.emplace("block_timestamp_type",      pack_unpack<block_timestamp_type>());
 
       built_in_types.emplace("cosio::name",                      true);
-      built_in_types.emplace("namex",                     true);
-       built_in_types.emplace("cosio::account_name",                     true);
-       built_in_types.emplace("cosio::contract_name",                     true);
-       built_in_types.emplace("cosio::method_name",                     true);
        built_in_types.emplace("cosio::coin_amount",                     true);
        built_in_types.emplace("cosio::bytes",                     true);
-      built_in_types.emplace("namex_",                    true);
-      built_in_types.emplace("bytes",                     true);
-      built_in_types.emplace("string",                    true);
 
-      built_in_types.emplace("checksum160",               true);
-      built_in_types.emplace("checksum256",               true);
-      built_in_types.emplace("checksum512",               true);
-
-      built_in_types.emplace("public_key",                true);
-      built_in_types.emplace("signature",                 true);
+      built_in_types.emplace("cosio::checksum160",               true);
+      built_in_types.emplace("cosio::checksum256",               true);
+      built_in_types.emplace("cosio::checksum512",               true);
+       
+      built_in_types.emplace("std::string",               true);
    }
 
    void abi_serializer::set_abi(const abi_def& abi) {
