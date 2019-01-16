@@ -14,14 +14,14 @@ struct TokenInterface {
 struct balance {
     cosio::name tokenOwner;
     uint32_t amount;
-    COSIO_SERIALIZE(balance, (tokenOwner))
+    COSIO_SERIALIZE(balance, (tokenOwner)(amount))
 };
 
 struct stat : public cosio::singleton_record {
     string name;
     string symbol;
     uint32_t total_supply;
-    COSIO_SERIALIZE(stat, (name)(symbol)(total_supply))
+    COSIO_SERIALIZE_DERIVED(stat, cosio::singleton_record, (name)(symbol)(total_supply))
 };
 
 struct cosToken : public cosio::contract {
@@ -36,6 +36,18 @@ struct cosToken : public cosio::contract {
                 s.symbol = symbol;
                 s.total_supply = total_supply;
                 });
+
+        // give init supply to contract owner
+        auto owner = get_name();
+        cosio::print_f("create call 1 : name %, symbol %, total_supply %, owner % \n", name,symbol,total_supply,owner.account());
+        balances.insert([&](balance& b){
+            auto account_name = owner.account();
+            b.tokenOwner.set_string(account_name);
+            b.amount = total_supply;
+        });
+
+        auto b = balances.get(owner.account());
+        cosio::print_f("create call 2 : user % have % amount. \n", b.tokenOwner.string(), b.amount);
     }
 
     void transfer(cosio::name from,cosio::name to, uint32_t amount) {
@@ -53,7 +65,7 @@ struct cosToken : public cosio::contract {
         if(!balances.has(to)) {
             balances.insert([&](balance& b){
                         b.tokenOwner = to;
-                        b.amount += amount;
+                        b.amount = amount;
                     });
         } else {
             balances.update(to,[&](balance& b){
