@@ -42,21 +42,38 @@ function build_contract {
 
     ($PRINT_CMDS; mkdir $workdir/built)
 
+    firstObj=`basename $1`
+    newName="0"
     for file in $@; do
         name=`basename $file`
         filePath=`dirname $file`
 
-        ($PRINT_CMDS; @WASM_CLANG@ -emit-llvm -O3 --std=c++14 --target=wasm32 -nostdinc \
-                                   -DBOOST_DISABLE_ASSERTS -DBOOST_EXCEPTION_DISABLE \
-                                   -nostdlib -nostdlibinc -ffreestanding -nostdlib -fno-threadsafe-statics -fno-rtti \
-                                   -fno-exceptions -I${SYSTEM_HEADER_DIR} \
-                                   -I${SYSTEM_HEADER_DIR}/libc++/upstream/include \
-                                   -I${SYSTEM_HEADER_DIR}/musl/upstream/include \
-                                   -I${BOOST_INCLUDE_DIR} \
-                                   -I $filePath \
-                                   ${EOSIOCPP_CFLAGS} \
-                                   -c $file -o $workdir/built/$name
-        )
+        if [ "$firstObj" = "$name" ]; then
+            ($PRINT_CMDS; @WASM_CLANG@ -emit-llvm -O3 --std=c++14 --target=wasm32 -nostdinc \
+                -DBOOST_DISABLE_ASSERTS -DBOOST_EXCEPTION_DISABLE \
+                -nostdlib -nostdlibinc -ffreestanding -nostdlib -fno-threadsafe-statics -fno-rtti \
+                -fno-exceptions -I${SYSTEM_HEADER_DIR} \
+                -I${SYSTEM_HEADER_DIR}/libc++/upstream/include \
+                -I${SYSTEM_HEADER_DIR}/musl/upstream/include \
+                -I${BOOST_INCLUDE_DIR} \
+                -I $filePath \
+                ${EOSIOCPP_CFLAGS} \
+                -c $file -o $workdir/built/$name
+            mv $workdir/built/$name $workdir/built/$newName
+            )
+        else
+            ($PRINT_CMDS; @WASM_CLANG@ -emit-llvm -O3 --std=c++14 --target=wasm32 -nostdinc \
+                -DBOOST_DISABLE_ASSERTS -DBOOST_EXCEPTION_DISABLE \
+                -nostdlib -nostdlibinc -ffreestanding -nostdlib -fno-threadsafe-statics -fno-rtti \
+                -fno-exceptions -I${SYSTEM_HEADER_DIR} \
+                -I${SYSTEM_HEADER_DIR}/libc++/upstream/include \
+                -I${SYSTEM_HEADER_DIR}/musl/upstream/include \
+                -I${BOOST_INCLUDE_DIR} \
+                -I $filePath \
+                ${EOSIOCPP_CFLAGS} \
+                -c $file -o $workdir/built/$name
+            )
+        fi
 
     done
 
