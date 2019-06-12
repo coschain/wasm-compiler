@@ -101,7 +101,7 @@ namespace cosio {
         }
     };
 
-    inline bool table_has_ex(const std::name& contract_name, const std::string& table_name, const bytes& primary_key) {
+    inline bool table_has_ex(const name& contract_name, const std::string& table_name, const bytes& primary_key) {
         if (!contract_name.is_contract()) {
             return false;
         }
@@ -115,7 +115,7 @@ namespace cosio {
         return size > 0;
     }
     
-    inline void table_get_ex(const std::name& contract_name, const std::string& table_name, const bytes& primary_key, bytes& record) {
+    inline void table_get_ex(const name& contract_name, const std::string& table_name, const bytes& primary_key, bytes& record) {
         std::string owner = contract_name.account();
         std::string contract = contract_name.contract();
         int size = ::table_get_record_ex((char*)owner.c_str(), (int)owner.size(),
