@@ -100,10 +100,64 @@ namespace cosio {
             table_delete(name(), pack(key));
         }
     };
+
+    inline bool table_has_ex(const std::name& contract_name, const std::string& table_name, const bytes& primary_key) {
+        if (!contract_name.is_contract()) {
+            return false;
+        }
+        std::string owner = contract_name.account();
+        std::string contract = contract_name.contract();
+        int size = ::table_get_record_ex((char*)owner.c_str(), (int)owner.size(),
+                                         (char*)contract.c_str(), (int)contract.size(),
+                                         (char*)table_name.c_str(), (int)table_name.size(),
+                                         (char*)primary_key.data(), (int)primary_key.size(),
+                                         nullptr, 0);
+        return size > 0;
+    }
     
+    inline void table_get_ex(const std::name& contract_name, const std::string& table_name, const bytes& primary_key, bytes& record) {
+        std::string owner = contract_name.account();
+        std::string contract = contract_name.contract();
+        int size = ::table_get_record_ex((char*)owner.c_str(), (int)owner.size(),
+                                         (char*)contract.c_str(), (int)contract.size(),
+                                         (char*)table_name.c_str(), (int)table_name.size(),
+                                         (char*)primary_key.data(), (int)primary_key.size(),
+                                         nullptr, 0);
+        record.clear();
+        if(size > 0) {
+            record.resize(size);
+            ::table_get_record_ex((char*)owner.c_str(), (int)owner.size(),
+                                  (char*)contract.c_str(), (int)contract.size(),
+                                  (char*)table_name.c_str(), (int)table_name.size(),
+                                  (char*)primary_key.data(), (int)primary_key.size(),
+                                  (char*)record.data(), size);
+        }
+    }
+    
+    template<typename Record, typename Primary, typename NameProvider>
+    class table_ex {
+    public:
+        bool has(const Primary& key) {
+            return table_has_ex(NameProvider::contract(), NameProvider::table(), pack(key));
+        }
+        
+        Record get(const Primary& key) {
+            bytes enc;
+            table_get_ex(NameProvider::contract(), NameProvider::table(), pack(key), enc);
+            return unpack<Record>(enc);
+        }
+        
+        Record get_or_default(const Primary& key, const Record& def = Record()) {
+            return has(key)? get(key) : def;
+        }
+    };
+
     template <class T, class M> M get_member_type(M T::*);
 }
 
+//
+// macros for local table definition
+//
 #define _COSIO_MEMBER_TYPE(m) decltype(cosio::get_member_type(m))
 
 #define _COSIO_TABLE(RECORD, INDICES, NAME) cosio::table<RECORD, _COSIO_MEMBER_TYPE(&(RECORD::BOOST_PP_SEQ_ELEM(0, INDICES))), NAME>
@@ -120,3 +174,23 @@ _COSIO_NAMED_TABLE(BOOST_PP_SEQ_CAT((__cosio_name)(__COUNTER__)), NAME, RECORD, 
 #define COSIO_DEFINE_TABLE(VARNAME, RECORD, INDICES)  COSIO_NAMED_TABLE(BOOST_PP_STRINGIZE(VARNAME), RECORD, INDICES) VARNAME
 
 #define COSIO_DEFINE_NAMED_TABLE(VARNAME, NAME, RECORD, INDICES)  COSIO_NAMED_TABLE(NAME, RECORD, INDICES) VARNAME
+
+//
+// macros for external table definition
+//
+#define _COSIO_TABLE_EX(RECORD, INDICES, NAME) cosio::table_ex<RECORD, _COSIO_MEMBER_TYPE(&(RECORD::BOOST_PP_SEQ_ELEM(0, INDICES))), NAME>
+
+#define _COSIO_NAME_PROVIDER_EX(TYPENAME, OWNER, CONTRACT, TABLE) \
+struct TYPENAME { \
+    static cosio::name contract() { return cosio::name(OWNER, CONTRACT); } \
+    static std::string table() { return TABLE; } \
+}
+
+#define _COSIO_NAMED_TABLE_EX(NAMETYPE, OWNER, CONTRACT, TABLE, RECORD, INDICES) \
+_COSIO_NAME_PROVIDER_EX(NAMETYPE, OWNER, CONTRACT, TABLE);\
+_COSIO_TABLE_EX(RECORD, INDICES, NAMETYPE)
+
+#define COSIO_NAMED_TABLE_EX(OWNER, CONTRACT, TABLE, RECORD, INDICES) \
+_COSIO_NAMED_TABLE_EX(BOOST_PP_SEQ_CAT((__cosio_name_ex)(__COUNTER__)), OWNER, CONTRACT, TABLE, RECORD, INDICES)
+
+#define COSIO_DEFINE_TABLE_EX(VARNAME, OWNER, CONTRACT, TABLE, RECORD, INDICES)  COSIO_NAMED_TABLE_EX(OWNER, CONTRACT, TABLE, RECORD, INDICES) VARNAME

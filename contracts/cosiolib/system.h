@@ -125,6 +125,23 @@ extern "C" {
     void table_delete_record(char *table_name, int table_name_len, char* primary, int primary_len);
     
     /**
+     Query a record in a database table of specified contract.
+     @param[in] owner_name name of the contract owner.
+     @param[in] owner_name_len length of @p owner_name.
+     @param[in] contract_name name of the contract.
+     @param[in] contract_name_len length of @p contract_name.
+     @param[in] table_name name of the table.
+     @param[in] table_name_len length of @p table_name.
+     @param[in] primary the primary key for query.
+     @param[in] primary_len length of @p primary.
+     @param[in,out] value the buffer to which record data are stored.
+     @param[in] value_len capacity of @p value, in bytes
+     @return if @p value_len is positive, return the number of bytes written in @p value.
+     if @p value_len is zero or negative, return the size of value.
+     */
+    int table_get_record_ex(char *owner_name, int owner_name_len, char *contract_name, int contract_name_len, char *table_name, int table_name_len, char* primary, int primary_len, char* value, int value_len);
+    
+    /**
      Assert function
      @param[in] pred a boolean predicate.
      @param[in] msg the error message string.
