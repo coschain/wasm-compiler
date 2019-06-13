@@ -73,7 +73,7 @@ namespace cosio {
     class singleton_ex : public unbound_singleton_ex<Record> {
     public:
         singleton_ex() {
-            bind(NameProvider::contract(), NameProvider::table());
+            unbound_singleton_ex<Record>::table_type::bind(NameProvider::contract(), NameProvider::table());
         }
     };
 }

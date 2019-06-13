@@ -170,7 +170,7 @@ namespace cosio {
     class table_ex : public unbound_table_ex<Record, Primary> {
     public:
         table_ex() {
-            bind(NameProvider::contract(), NameProvider::table());
+            unbound_table_ex<Record, Primary>::bind(NameProvider::contract(), NameProvider::table());
         }
     };
 
