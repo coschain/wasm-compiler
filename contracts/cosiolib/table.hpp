@@ -133,22 +133,44 @@ namespace cosio {
                                   (char*)record.data(), size);
         }
     }
-    
-    template<typename Record, typename Primary, typename NameProvider>
-    class table_ex {
+
+    template<typename Record, typename Primary>
+    class unbound_table_ex {
     public:
         bool has(const Primary& key) {
-            return table_has_ex(NameProvider::contract(), NameProvider::table(), pack(key));
+            return table_has_ex(_contract, _table_name, pack(key));
         }
         
         Record get(const Primary& key) {
             bytes enc;
-            table_get_ex(NameProvider::contract(), NameProvider::table(), pack(key), enc);
+            table_get_ex(_contract, _table_name, pack(key), enc);
             return unpack<Record>(enc);
         }
         
         Record get_or_default(const Primary& key, const Record& def = Record()) {
             return has(key)? get(key) : def;
+        }
+
+        void bind(const name& contract, const std::string& table) {
+            cosio_assert(contract.is_contract(), "bind to contract only");
+            _contract = contract;
+            _table_name = table;
+        }
+
+        void bind(const std::string& owner, const std::string& contract, const std::string& table) {
+            bind(name(owner, contract), table);
+        }
+
+    protected:
+        name _contract;
+        std::string _table_name;
+    };
+    
+    template<typename Record, typename Primary, typename NameProvider>
+    class table_ex : public unbound_table_ex<Record, Primary> {
+    public:
+        table_ex() {
+            bind(NameProvider::contract(), NameProvider::table());
         }
     };
 
@@ -194,3 +216,5 @@ _COSIO_TABLE_EX(RECORD, INDICES, NAMETYPE)
 _COSIO_NAMED_TABLE_EX(BOOST_PP_SEQ_CAT((__cosio_name_ex)(__COUNTER__)), OWNER, CONTRACT, TABLE, RECORD, INDICES)
 
 #define COSIO_DEFINE_TABLE_EX(VARNAME, OWNER, CONTRACT, TABLE, RECORD, INDICES)  COSIO_NAMED_TABLE_EX(OWNER, CONTRACT, TABLE, RECORD, INDICES) VARNAME
+
+#define COSIO_UNBOUND_TABLE_EX(VARNAME, RECORD, INDICES)  cosio::unbound_table_ex<RECORD, _COSIO_MEMBER_TYPE(&(RECORD::BOOST_PP_SEQ_ELEM(0, INDICES)))> VARNAME

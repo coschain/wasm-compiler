@@ -51,26 +51,30 @@ namespace cosio {
         table_type _table;
     };
 
-    template<typename Record, typename NameProvider>
-    class singleton_ex {
+    template<typename Record>
+    class unbound_singleton_ex : public unbound_table_ex<Record, int32_t> {
     public:
-        using table_type = table_ex<Record, int32_t, NameProvider>;
-        
-    public:
+        using table_type = unbound_table_ex<Record, int32_t>;
+
         bool exists() {
-            return _table.has(_COSIO_SINGLETON_DATA_ID);
+            return table_type::has(_COSIO_SINGLETON_DATA_ID);
         }
         
         Record get() {
-            return _table.get(_COSIO_SINGLETON_DATA_ID);
+            return table_type::get(_COSIO_SINGLETON_DATA_ID);
         }
         
         Record get_or_default(const Record& def = Record()) {
-            return _table.get_or_default(_COSIO_SINGLETON_DATA_ID, def);
+            return table_type::get_or_default(_COSIO_SINGLETON_DATA_ID, def);
         }
-        
-    private:
-        table_type _table;
+    };
+
+    template<typename Record, typename NameProvider>
+    class singleton_ex : public unbound_singleton_ex<Record> {
+    public:
+        singleton_ex() {
+            bind(NameProvider::contract(), NameProvider::table());
+        }
     };
 }
 
@@ -99,3 +103,5 @@ cosio::singleton_ex<RECORD, NAMETYPE>
 _COSIO_NAMED_SINGLETON_EX(BOOST_PP_SEQ_CAT((__cosio_name_ex)(__COUNTER__)), OWNER, CONTRACT, TABLE, RECORD)
 
 #define COSIO_DEFINE_SINGLETON_EX(VARNAME, OWNER, CONTRACT, TABLE, RECORD)  COSIO_NAMED_SINGLETON_EX(OWNER, CONTRACT, TABLE, RECORD) VARNAME
+
+#define COSIO_UNBOUND_SINGLETON_EX(VARNAME, RECORD)  cosio::unbound_singleton_ex<RECORD> VARNAME
