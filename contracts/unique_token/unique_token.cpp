@@ -105,17 +105,8 @@ struct uniqueToken : public cosio::contract {
         });
  
         // update owner's token count
-        if (ownerCount.has(owner)) {
-            ownerCount.update(owner,[&](ownerCountItem& o){
-                    o.count++;
-                    });
-        } else {
-            ownerCount.insert([&](ownerCountItem& o){
-                    o.tokenOwner = owner;
-                    o.count = 1;
-                    });
-        }
-
+        update_ownerCount(owner.account(),true);
+        
         // add token to table
         tokens.insert([&](token& t){
                 t.id = id;
@@ -148,19 +139,24 @@ struct uniqueToken : public cosio::contract {
         idToOwner.update(id,[&](idOwnerItem& i){
                 i.tokenOwner.set_string(to.account());
                 });
+        
         // update origin owner's token count
-        ownerCount.update(from,[&](ownerCountItem& o){
-                o.count--;
-                });
-
+        update_ownerCount(from,false);
+        
         // update new owner's token count
-        if (ownerCount.has(to)) {
-            ownerCount.update(to,[&](ownerCountItem& o){
-                    o.count++;
+        update_ownerCount(to,true);
+    }
+
+    void update_ownerCount(const cosio::name& user,bool add) {
+        // update user's token count
+        if (ownerCount.has(user)) {
+            ownerCount.update(user,[&](ownerCountItem& o){
+                    add ? o.count++:o.count--;
                     });
         } else {
+            if(!add) cosio::cosio_assert(false, "can not decrease when count not exist");
             ownerCount.insert([&](ownerCountItem& o){
-                    o.tokenOwner = to;
+                    o.tokenOwner = user;
                     o.count = 1;
                     });
         }
