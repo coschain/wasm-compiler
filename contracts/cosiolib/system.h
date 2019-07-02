@@ -26,6 +26,16 @@ extern "C" {
     int current_witness(char* buffer, int size);
     
     /**
+     Get current block producers as a single string joined by producer account names with delimiter space(ASCII=32).
+     @param[in,out] buffer the buffer to which the string is stored.
+     @param[in] size the capacity of @p buffer, in bytes.
+     @return if @p size is positive, return the number of bytes written to @p buffer.
+     if @p size is zero or negative, return the length of the string in bytes without changing @p buffer.
+     */
+    int get_block_producers(char *buffer, int size);
+
+
+    /**
      Get SHA256 hash digest of a blob.
      @param[in] buffer the data to be hashed.
      @param[in] size size of data in bytes.
@@ -268,6 +278,39 @@ extern "C" {
      */
     void transfer_to_contract( char* to_owner, int to_owner_len, char* to_contract, int to_contract_len, unsigned long long amount, char* memo, int memo_len);
     
+    /**
+     Get account name of current reputation administrator.
+     @param[in,out] buffer the buffer to which name is stored.
+     @param[in] size capacity of @p buf, in bytes.
+     @return if @p size is positive, return the number of bytes written to @p buffer.
+     if @p size is zero or negative, return the length of account name.
+     */
+    int get_reputation_admin(char* buffer, int size);
+
+    /**
+     Set new reputation administrator.
+     @param[in] name the account name of new reputation administrator.
+     @param[in] name_len length of account name in bytes.
+     */
+    void set_reputation_admin(char* name, int name_len);
+
+    /**
+     * Set reputations for multiple accounts.
+     * 
+     * @param names an array of account names
+     * @param names_len size of names array in bytes
+     * @param name_sizes an array of account name lengths
+     * @param name_sizes_len size of name_sizes array in bytes
+     * @param reputations an array of reputation values
+     * @param reputations_len size of reputations array in bytes
+     * @param memos an array of update memo texts
+     * @param memos_len size of memos array in bytes
+     * @param memo_sizes an array of memo lengths
+     * @param memo_sizes_len size of memo_sizes array in bytes
+     * @return number of accounts
+     */
+    int set_reputation(char** names, int names_len, int* name_sizes, int name_sizes_len, int *reputations, int reputations_len, char **memos, int memos_len, int *memo_sizes, int memo_sizes_len);
+
 #ifdef __cplusplus
 }
 #endif

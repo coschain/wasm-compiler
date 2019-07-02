@@ -34,6 +34,21 @@ namespace cosio {
         return _read_string(::current_witness);
     }
     
+    inline std::vector<std::string> block_producers() {
+        std::vector<std::string> result;
+        std::string::size_type prev_pos = 0, pos = 0;
+        std::string names = _read_string(::get_block_producers);
+        while((pos = names.find(' ', pos)) != std::string::npos) {
+            std::string substring( names.substr(prev_pos, pos-prev_pos) );
+            result.push_back(substring);
+            prev_pos = ++pos;
+        }
+        if (pos != std::string::npos && pos > prev_pos) {
+            result.push_back(names.substr(prev_pos, pos-prev_pos));
+        }
+        return result;
+    }
+
     inline checksum256 sha256(const bytes& data) {
         checksum256 checksum;
         ::sha256((char*)data.data(), (int)data.size(), (char*)checksum.hash, 32);
@@ -119,6 +134,43 @@ namespace cosio {
     template<typename...Args>
     static void execute_contract( const name& contract, const std::string& method, coin_amount coins, Args...args ) {
         return execute_contract(contract, method, pack(std::make_tuple(args...)), coins);
+    }
+
+    inline std::string reputation_admin() {
+        return _read_string(::get_reputation_admin);
+    }
+
+    inline void reputation_admin(const std::string& name) {
+        ::set_reputation_admin((char *)name.c_str(), (int)name.size());
+    }
+
+    inline void update_reputations(const std::vector<std::string>& names, const std::vector<int32_t>& reputations, const std::vector<std::string>& memos) {
+        size_t count = names.size();
+        cosio_assert(count == reputations.size() && count == memos.size(), "illegal parameters");
+
+        std::vector<char*> name;
+        std::vector<int> name_len;
+        std::vector<char*> memo;
+        std::vector<int> memo_len;
+        std::vector<int> rep;
+        for (size_t i = 0; i < count; i++) {
+            name.push_back((char*)names[i].c_str());
+            name_len.push_back((int)names[i].size());
+            memo.push_back((char*)memos[i].c_str());
+            memo_len.push_back((int)memos[i].size());
+            rep.push_back((int)reputations[i]);
+        }
+        
+        ::set_reputation(
+            name.data(), sizeof(char*) * name.size(),
+            name_len.data(), sizeof(int) * name_len.size(),
+            rep.data(), sizeof(int) * reputations.size(),
+            memo.data(), sizeof(char*) * memo.size(),
+            memo_len.data(), sizeof(int) * memo_len.size());
+    }
+
+    inline void update_reputation(const std::string& name, int32_t reputation, const std::string& memo) {
+        update_reputations( std::vector<std::string>{name}, std::vector<int32_t>{reputation}, std::vector<std::string>{memo});
     }
     
 }
