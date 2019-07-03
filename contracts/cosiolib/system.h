@@ -311,6 +311,28 @@ extern "C" {
      */
     int set_reputation(char** names, int names_len, int* name_sizes, int name_sizes_len, int *reputations, int reputations_len, char **memos, int memos_len, int *memo_sizes, int memo_sizes_len);
 
+    /**
+     Set new copyright administrator.
+     @param[in] name the account name of new copyright administrator.
+     @param[in] name_len length of account name in bytes.
+     */
+    void set_copyright_admin(char* name, int name_len);
+
+    /**
+     * Set copyrights for multiple accounts.
+     * 
+     * @param postids an array of postid value
+     * @param postids_len size of postids array in bytes
+     * @param copyrights an array of copyright values
+     * @param copyrights_len size of copyrights array in bytes
+     * @param memos an array of update memo texts
+     * @param memos_len size of memos array in bytes
+     * @param memo_sizes an array of memo lengths
+     * @param memo_sizes_len size of memo_sizes array in bytes
+     * @return number of accounts
+     */
+    int set_copyright(int* postids, int postids_len, int *copyrights, int copyrights_len, char **memos, int memos_len, int *memo_sizes, int memo_sizes_len);
+
 #ifdef __cplusplus
 }
 #endif

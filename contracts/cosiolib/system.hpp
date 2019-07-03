@@ -172,5 +172,34 @@ namespace cosio {
     inline void update_reputation(const std::string& name, int32_t reputation, const std::string& memo) {
         update_reputations( std::vector<std::string>{name}, std::vector<int32_t>{reputation}, std::vector<std::string>{memo});
     }
-    
+
+    inline void set_copyright_admin(const std::string& name) {
+        ::set_copyright_admin((char*)name.c_str(),(int)name.size());
+    }
+
+    inline void update_copyrights(const std::vector<uint64_t>& postids, const std::vector<int32_t>& copyrights, const std::vector<std::string>& memos) {
+        size_t count = postids.size();
+        cosio_assert(count == copyrights.size() && count == memos.size(), "illegal parameters");
+
+        std::vector<unsigned long long> pids;
+        std::vector<char*> memo;
+        std::vector<int> memo_len;
+        std::vector<int> cps;
+        for (size_t i = 0; i < count; i++) {
+            pids.push_back(postids[i]);
+            memo.push_back((char*)memos[i].c_str());
+            memo_len.push_back((int)memos[i].size());
+            cps.push_back((int)copyrights[i]);
+        }
+        
+        ::set_copyright(
+            (int*)pids.data(), sizeof(unsigned long long) * pids.size(),
+            cps.data(), sizeof(int) * copyrights.size(),
+            memo.data(), sizeof(char*) * memo.size(),
+            memo_len.data(), sizeof(int) * memo_len.size());
+    }
+
+    inline void update_copyright(uint64_t postid, int32_t copyright, const std::string& memo) {
+        update_copyrights( std::vector<uint64_t>{postid}, std::vector<int32_t>{copyright}, std::vector<std::string>{memo});
+    }
 }
