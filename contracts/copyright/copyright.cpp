@@ -1,8 +1,7 @@
 #include <cosiolib/contract.hpp>
 #include <cosiolib/print.hpp>
 
-const uint32_t expire_blocks = 900;
-//const uint32_t expire_blocks = 86400;
+const uint32_t expire_blocks = 86400;
 
 struct voter {
     voter():name(""),haveVoted(false){}
@@ -41,12 +40,10 @@ public:
 
     void proposal(const std::string& user) {
         auto caller = cosio::get_contract_caller();
-        cosio::print("\nproposal() get_contract_caller:%",caller.string());
         auto producers = cosio::block_producers();
 
         std::vector<std::string>::const_iterator it = std::find(producers.begin(),producers.end(),caller.string());
         if(it == producers.end()){
-            cosio::print("\nproposal() caller not producers");
             cosio::cosio_assert(false, std::string("caller is not producers, name:") + caller.string());
         }
 
@@ -60,7 +57,7 @@ public:
         }
 
         // a new proposal
-        auto v = box.get_or_create();
+        box.get_or_create();
         box.update([&](item &vt){
                 vt.admin = user;
                 vt.agree = 0;
@@ -71,53 +68,43 @@ public:
                     v.haveVoted = false;
                     vt.producers.push_back(v);
                 }
-        cosio::print("\nnew proposal begin_block:%", vt.begin_block);
         });
     }
 
     void vote() {
-        cosio::print("\nvote() enter");
         auto caller = cosio::get_contract_caller();
         if(!box.exists()) {
-        cosio::print("\nvote() box not exist");
             cosio::cosio_assert(false, std::string("no proposal yet"));
-        }
-        cosio::print("\nvote() box exist");
-
-        // check if caller in the producer list when proposal created
-        auto v = box.get();
-        cosio::print("\n table producer size:%",v.producers.size());
-        for(std::vector<voter>::const_iterator it = v.producers.begin();it!=v.producers.end();it++) {
-            cosio::print("\nproducer:%",it->name);
         }
 
         auto name = caller.string();
-        std::vector<voter>::const_iterator it = std::find_if(v.producers.begin(),v.producers.end(),[&name](const voter& vt){return vt.name == name;});
-        if(it == v.producers.end()) {
-        cosio::print("\ncaller not in producers");
-            cosio::cosio_assert(false, std::string("caller is not in producers when proposal, caller:") + caller.string());
-        }
-
-        // check expire
         auto num = cosio::current_block_number();
-        cosio::print("\nvote() current block num:%", num);
-        if(v.begin_block + expire_blocks <= num) {
-            cosio::cosio_assert(false, std::string("proposal expired, please commit a new proposal"));
-        }
 
-        cosio::print("\nvote() update");
         // add vote
         box.update([&](item &vt){
-                vt.agree++;
-                });
+            // check expire
+            if(vt.begin_block + expire_blocks <= num) {
+                cosio::cosio_assert(false, std::string("proposal expired, please commit a new proposal"));
+            }
+            // check if caller in the producer list when proposal created
+            std::vector<voter>::iterator it = std::find_if(vt.producers.begin(),vt.producers.end(),[&name](const voter& vv){return vv.name == name;});
+            if(it == vt.producers.end()) {
+                cosio::cosio_assert(false, std::string("caller is not in producers when proposal, caller:") + name);
+            }
+            // vote only once
+            if(it->haveVoted) {
+                cosio::cosio_assert(false, std::string("caller has voted, caller:") + name);
+            }
+            it->haveVoted = true;
+            vt.agree++;
+        });
+
+        auto v = box.get();
         auto all_producer_size = v.producers.size();
         auto limit = (all_producer_size/3)*2;
         
-        cosio::print("\nvote() producer size:%",all_producer_size);
         // setadmin if most bp agree
-        if(v.agree+1 == 1) {
-        //if(v.agree+1 > limit) {
-        cosio::print("\nset admin %", v.admin);
+        if(v.agree > limit) {
             setadmin(v.admin);
             box.remove();
         }
