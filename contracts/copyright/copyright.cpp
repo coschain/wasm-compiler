@@ -101,6 +101,9 @@ public:
 
         auto v = box.get();
         auto all_producer_size = v.producers.size();
+        if(all_producer_size < 3) {
+            all_producer_size = 3;
+        }
         auto limit = (all_producer_size/3)*2;
         
         // setadmin if most bp agree
@@ -116,4 +119,4 @@ private:
 };
 
 
-COSIO_ABI(copyright, (setadmin)(setcopyright)(setcopyrights)(proposal)(vote))
+COSIO_ABI(copyright, (setcopyright)(setcopyrights)(proposal)(vote))
