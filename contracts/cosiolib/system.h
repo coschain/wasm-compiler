@@ -333,6 +333,23 @@ extern "C" {
      */
     int set_copyright(int* postids, int postids_len, int *copyrights, int copyrights_len, char **memos, int memos_len, int *memo_sizes, int memo_sizes_len);
 
+    /**
+     * Set freeze or unfreeze for multiple accounts.
+     * 
+     * @param names an array of account names
+     * @param names_len size of names array in bytes
+     * @param name_sizes an array of account name lengths
+     * @param name_sizes_len size of name_sizes array in bytes
+     * @param op an operation represent freeze or unfreeze
+     * @param memos an array of update memo texts
+     * @param memos_len size of memos array in bytes
+     * @param memo_sizes an array of memo lengths
+     * @param memo_sizes_len size of memo_sizes array in bytes
+     * @return number of accounts
+     */
+    int set_freeze(char** names, int names_len, int* name_sizes, int name_sizes_len, int op, char **memos, int memos_len, int *memo_sizes, int memo_sizes_len);
+
+
 #ifdef __cplusplus
 }
 #endif

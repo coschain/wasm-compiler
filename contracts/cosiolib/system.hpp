@@ -202,4 +202,26 @@ namespace cosio {
     inline void update_copyright(uint64_t postid, int32_t copyright, const std::string& memo) {
         update_copyrights( std::vector<uint64_t>{postid}, std::vector<int32_t>{copyright}, std::vector<std::string>{memo});
     }
+
+    inline void update_freeze(const std::vector<std::string>& names, int32_t op, const std::vector<std::string>& memos) {
+        size_t count = names.size();
+
+        std::vector<char*> name;
+        std::vector<int> name_len;
+        std::vector<char*> memo;
+        std::vector<int> memo_len;
+        for (size_t i = 0; i < count; i++) {
+            name.push_back((char*)names[i].c_str());
+            name_len.push_back((int)names[i].size());
+            memo.push_back((char*)memos[i].c_str());
+            memo_len.push_back((int)memos[i].size());
+        }
+
+        ::set_freeze(
+                name.data(), sizeof(char*) * name.size(),
+                name_len.data(), sizeof(int) * name_len.size(),
+                (int)op,
+                memo.data(), sizeof(char*) * memo.size(),
+                memo_len.data(), sizeof(int) * memo_len.size());
+    }
 }
