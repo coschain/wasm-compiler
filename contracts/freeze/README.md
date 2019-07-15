@@ -12,7 +12,7 @@
   ```
   
   2.all bp accounts can call vote method with a proposal id to agree the proposal. once over 2/3 bp voted the proposal become effective,
-  these accounts status change to freezed.
+  these proposal accounts status change to freezed.
   ```
-  all initminer1 contentos freeze vote [proposal_id]
+  call bp_account contentos freeze vote [proposal_id]
   ```
