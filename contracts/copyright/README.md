@@ -5,7 +5,19 @@
  or CopyrightConfirmation(2).
 ## usage
   1.bp account call proposal method to suggest a agent, this agent responsible for later setcopyright operation.
+  ```
+  create initminer contentos
+  stake initminer contentos 1.000000
+  deploy contentos copyright /your_path/copyright.wasm /your_path/copyright.abi false
+  call any_bp_account_name contentos copyright proposal [\"proposal_account\"]
+  ```
   
   2.all bp accounts can call vote method to agree the proposal. once over 2/3 bp voted the proposal become effective
+  ```
+  call any_bp_account_name contentos copyright vote []
+  ```
   
   3.then agent account can call setcopyright to set post's copyright.
+  ```
+  call proposal_account contentos copyright setcopyright "[postid,copyright_type,\"description of copytight\"]"
+  ```
