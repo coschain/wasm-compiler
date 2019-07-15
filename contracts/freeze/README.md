@@ -1,6 +1,6 @@
 # freeze contract
 ## breif
-  this contract is aim to freeze or unfreeze a account,a account can not send transaction if account is freezed.
+  this contract is aim to freeze(1) or unfreeze(0) a account,a account can not send transaction if account is freezed.
 ## usage
   1.bp account call proposalfreeze method to suggest a account group that wait to be freeze or unfreeze,this method will generate a
   proposal id, this id auto increment as proposalfreeze called. there can many proposals at same time.
