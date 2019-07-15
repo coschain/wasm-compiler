@@ -2,7 +2,7 @@
 ## breif
   this contract is aim to set post's copyright,a post will be excluded from reward share if copyright 
   is CopyrightInfringement, a post's default copyright is CopyrightUnkown(0),and can be change to CopyrightInfringement(1)
- or CopyrightConfirmation(2).
+ or CopyrightConfirmation(2).this contract's owner must be contentos
 ## usage
   1.bp account call proposal method to suggest a agent, this agent responsible for later setcopyright operation.
   ```
