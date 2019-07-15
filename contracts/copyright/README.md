@@ -4,7 +4,7 @@
   is CopyrightInfringement, a post's default copyright is CopyrightUnkown(0),and can be change to CopyrightInfringement(1)
  or CopyrightConfirmation(2).this contract's owner must be contentos
 ## usage
-  1.bp account call proposal method to suggest a agent, this agent responsible for later setcopyright operation.
+  1.bp account call proposal method to suggest a agent, this agent responsible for later setcopyright operation.only one proposal is permitted in a period(86400 blocks),when last proposal expired, bp can proposal new one.
   ```
   create initminer contentos
   stake initminer contentos 1.000000
