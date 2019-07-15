@@ -2,10 +2,10 @@
 ## breif
   this contract is aim to set account's reputation,a account will lost right if account's reputation is zero
   , a accounts's default reputation is 100, the max reputation is 10000.
-  this contract's owner must be contentos.only one proposal is permitted in a period(86400 blocks),when last proposal expired, bp can proposal new one.
+  this contract's owner must be contentos.
   
 ## usage
-  1.bp account call proposal method to suggest a agent, this agent responsible for later setrep operation.
+  1.bp account call proposal method to suggest a agent, this agent responsible for later setrep operation.only one proposal is permitted in a period(86400 blocks),when last proposal expired, bp can proposal new one.
   ```
   create initminer contentos
   stake initminer contentos 1.000000
