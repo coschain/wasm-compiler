@@ -5,6 +5,8 @@
   1.bp account call proposalfreeze method to suggest a account group that wait to be freeze or unfreeze,this method will generate a
   proposal id, this id auto increment as proposalfreeze called. there can many proposals at same time.
   ```
+  create initminer contentos
+  stake initminer contentos 1.000000
   deploy contentos freeze /your_path/freeze.wasm /your_path/freeze.abi false
   call bp_account contentos freeze proposalfreeze "[[\"account1\",\"account2\"],1,[\"you are bad\",\"you are too bad\"]]"
   ```
