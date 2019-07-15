@@ -19,5 +19,5 @@
   
   3.then agent account can call setcopyright to set post's copyright.
   ```
-  call proposal_account contentos copyright setcopyright "[postid,copyright_type,\"description of copytight\"]"
+  call proposal_account contentos copyright setcopyright "[postid,copyright_type,\"description of copyright\"]"
   ```
