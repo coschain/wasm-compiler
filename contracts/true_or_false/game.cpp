@@ -13,7 +13,7 @@ struct stat: public cosio::singleton_record {
     COSIO_SERIALIZE_DERIVED(stat, cosio::singleton_record, (admin))
 };
 
-class mybet: public cosio::contract {
+class theguess: public cosio::contract {
 public:
     using cosio::contract::contract;
 
@@ -26,7 +26,7 @@ public:
         cosio::print_f("create success with admin % \n", admin);
     }
 
-    void bet(bool guess) {
+    void guess(bool myguess) {
         cosio::name contract_name = get_name();
         cosio::name caller = get_caller();
         cosio::coin_amount contract_balance = cosio::get_contract_balance(contract_name);
@@ -34,12 +34,12 @@ public:
         cosio::cosio_assert(stats.exists(), "should init first");
         cosio::cosio_assert( contract_balance >= 2 * stake, std::string("contract balance not enough"));
         uint64_t block_number = cosio::current_block_number();
-        if (block_number % 2 == 0 && guess) {
+        if (block_number % 2 == 0 && myguess) {
             cosio::transfer_to_user(caller, 2* stake, "");
             cosio::print_f("user % win % . \n", caller, stake);
             return;
         }
-        if (block_number % 2 == 1 && !guess) {
+        if (block_number % 2 == 1 && !myguess) {
             cosio::transfer_to_user(caller, 2 * stake, "");
             cosio::print_f("user % win % . \n", caller, stake);
             return;
@@ -73,4 +73,4 @@ public:
 };
 
 // declare the class and methods of contract
-COSIO_ABI(mybet, (init)(bet)(withdraw)(charge)(balance))
+COSIO_ABI(theguess, (init)(guess)(withdraw)(charge)(balance))
