@@ -463,6 +463,7 @@ string to_string(unsigned long long val)
     return as_string(snprintf, initial_string<string, unsigned long long>()(), "%llu", val);
 }
 
+/*
 string to_string(float val)
 {
     return as_string(snprintf, initial_string<string, float>()(), "%f", val);
@@ -477,6 +478,7 @@ string to_string(long double val)
 {
     return as_string(snprintf, initial_string<string, long double>()(), "%Lf", val);
 }
+*/
 
 wstring to_wstring(int val)
 {
@@ -508,6 +510,7 @@ wstring to_wstring(unsigned long long val)
     return as_string(get_swprintf(), initial_string<wstring, unsigned long long>()(), L"%llu", val);
 }
 
+/*
 wstring to_wstring(float val)
 {
     return as_string(get_swprintf(), initial_string<wstring, float>()(), L"%f", val);
@@ -522,4 +525,6 @@ wstring to_wstring(long double val)
 {
     return as_string(get_swprintf(), initial_string<wstring, long double>()(), L"%Lf", val);
 }
+*/
+
 _LIBCPP_END_NAMESPACE_STD

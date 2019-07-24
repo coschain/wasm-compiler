@@ -4,7 +4,6 @@ file(GLOB ENV_SOURCES  "upstream/src/env/*.c")
 file(GLOB ERRNO_SOURCES  "upstream/src/errno/*.c")
 file(GLOB EXIT_SOURCES  "upstream/src/exit/*.c")
 file(GLOB LOCALE_SOURCES "upstream/src/locale/*.c")
-file(GLOB MATH_SOURCES  "upstream/src/math/*.c")
 file(GLOB MBYTE_SOURCES  "upstream/src/multibyte/*.c")
 file(GLOB MISC_SOURCES "upstream/src/misc/*.c")
 file(GLOB SEARCH_SOURCES "upstream/src/search/*.c")
@@ -13,7 +12,7 @@ file(GLOB STDLIB_SOURCES "upstream/src/stdlib/*.c")
 file(GLOB STRING_SOURCES "upstream/src/string/*.c")
 file(GLOB TIME_SOURCES "upstream/src/time/*.c")
 file(GLOB THREAD_SOURCES "upstream/src/thread/*.c") #only for __lock __unlock
-set(INTERNAL_SOURCES upstream/src/internal/floatscan.c upstream/src/internal/intscan.c upstream/src/internal/shgetc.c upstream/src/internal/libc.c)
+set(INTERNAL_SOURCES upstream/src/internal/intscan.c upstream/src/internal/shgetc.c upstream/src/internal/libc.c)
 
 add_wast_library(TARGET libc
   NOWARNINGS

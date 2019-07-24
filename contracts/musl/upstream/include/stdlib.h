@@ -102,9 +102,9 @@ int clearenv(void);
 
 #ifdef _GNU_SOURCE
 int ptsname_r(int, char *, size_t);
-char *ecvt(double, int, int *, int *);
-char *fcvt(double, int, int *, int *);
-char *gcvt(double, int, char *);
+//char *ecvt(double, int, int *, int *);
+//char *fcvt(double, int, int *, int *);
+//char *gcvt(double, int, char *);
 struct __locale_struct;
 //float strtof_l(const char *__restrict, char **__restrict, struct __locale_struct *);
 //double strtod_l(const char *__restrict, char **__restrict, struct __locale_struct *);
