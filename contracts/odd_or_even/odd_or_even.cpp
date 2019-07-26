@@ -71,12 +71,18 @@ public:
         uint64_t current_block = cosio::current_block_number();
         cosio::cosio_assert(current_block < db.timeout, "the bet has finished."); 
         if (db.creator == caller) {
+            if (db.hash2.length() > 0) {
+                cosio::cosio_assert(!(hash == db.hash2), "same hash with challenger."); 
+            }
             stats.update([&](stat& s){
                 s.hash1 = hash;
                 s.creator_stake += db.stake;
             }); 
         }
         if (db.challenger == caller) {
+            if (db.hash1.length() > 0) {
+                cosio::cosio_assert(!(hash == db.hash1), "same hash with creator."); 
+            }
             stats.update([&](stat& s){
                 s.hash2 = hash;
                 s.challenger_stake += db.stake;
