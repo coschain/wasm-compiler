@@ -3,7 +3,7 @@
   user pushlish post on contentos chain, but how can we know a post is original or plagiarized? so we need a method to 
   distinguish copyright. this contract is a tool to do it.
 ## brief
-  this contract is aim to set post's copyright,a post will be excluded from reward share if copyright is infringement, a post's default copyright is 0,and can be change to 1 or 2.this contract's owner must be contentos
+  this contract is aim to set post's copyright,a post will be excluded from reward share if copyright is infringement, a post's default copyright is `0`,and can be change to `1` or `2`. This contract's owner must be `contentos`.
   
   |copyright|Description|
   |---|---|
@@ -19,7 +19,7 @@
   call any_bp_account_name contentos copyright proposal [\"proposal_account\"]
   ```
   
-  2.all bp accounts can call vote method to agree the proposal. once over 2/3 bp voted the proposal become effective
+  2.all bp accounts can call vote method to agree the proposal. once over 2/3 bp voted the proposal become effective.
   ```
   call any_bp_account_name contentos copyright vote []
   ```
