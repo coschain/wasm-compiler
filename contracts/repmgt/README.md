@@ -1,11 +1,10 @@
 # reputation contract
 ## background
   every user has unique actions on contentos chain, some users do good while some do evil, we want to encourage good user and suppress evil user, so we introduce reputation system to grade different users, this contract is a tool to mark user's reputation.If user's reputation down to zero: 
-  ```
-  1.The user's vote operation can not generate benifit for post author
-  2.The user can not be a BP
-  3.The user's post and reply can not gain reward
-  ```
+  
+* The user's vote operation can not generate benifit for post author
+* The user can not be a BP
+* The user's post and reply can not gain reward
 
 ## brief
   this contract is aim to set account's reputation,a account will lost right if account's reputation is zero
@@ -29,4 +28,4 @@
   3.then agent account can call setrep to set account's reputation.
   ```
   call proposal_account contentos reputation setrep "[\"reputation_account\",reputation_num,\"description of reputation\"]"
-  ```
+  ``
