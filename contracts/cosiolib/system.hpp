@@ -43,8 +43,8 @@ namespace cosio {
             result.push_back(substring);
             prev_pos = ++pos;
         }
-        if (pos != std::string::npos && pos > prev_pos) {
-            result.push_back(names.substr(prev_pos, pos-prev_pos));
+        if (prev_pos < names.size()) {
+            result.push_back(names.substr(prev_pos, names.size()-prev_pos));
         }
         return result;
     }
