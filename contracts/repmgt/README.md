@@ -1,4 +1,7 @@
 # reputation contract
+## background
+  every user has unique actions on contentos chain, some users do good while some do evil, we want to encourage good user and suppress evil user, so we introduce reputation system to grade different users, this contract is a tool to mark user's reputation.
+
 ## breif
   this contract is aim to set account's reputation,a account will lost right if account's reputation is zero
   , a accounts's default reputation is 100, the max reputation is 10000.
