@@ -7,7 +7,7 @@
   3.The user's post and reply can not gain reward
   ```
 
-## breif
+## brief
   this contract is aim to set account's reputation,a account will lost right if account's reputation is zero
   , a accounts's default reputation is 100, the max reputation is 10000.
   this contract's owner must be contentos.
