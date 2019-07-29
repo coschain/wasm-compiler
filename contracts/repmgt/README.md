@@ -1,6 +1,11 @@
 # reputation contract
 ## background
-  every user has unique actions on contentos chain, some users do good while some do evil, we want to encourage good user and suppress evil user, so we introduce reputation system to grade different users, this contract is a tool to mark user's reputation.
+  every user has unique actions on contentos chain, some users do good while some do evil, we want to encourage good user and suppress evil user, so we introduce reputation system to grade different users, this contract is a tool to mark user's reputation.If user's reputation down to zero: 
+  ```
+  1.The user's vote operation can not generate benifit for post author
+  2.The user can not be a BP
+  3.The user's post and reply can not gain reward
+  ```
 
 ## breif
   this contract is aim to set account's reputation,a account will lost right if account's reputation is zero
