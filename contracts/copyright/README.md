@@ -4,12 +4,12 @@
   distinguish copyright. this contract is a tool to do it.
 ## breif
   this contract is aim to set post's copyright,a post will be excluded from reward share if copyright is infringement, a post's default copyright is 0,and can be change to 1 or 2.this contract's owner must be contentos
-  ```
-  copyright status
-  0 is CopyrightUnkown, means default copyright status
-  1 is CopyrightInfringement, means this post is infringement
-  2 is CopyrightConfirmation, means this post's copyright is confirmed
-  ```
+  
+  |copyright|Description|
+  |---|---|
+  |0|CopyrightUnkown, means default copyright status|
+  |1|CopyrightInfringement, means this post is infringement|
+  |2|CopyrightConfirmation, means this post's copyright is confirmed|
 ## usage
   1.bp account call proposal method to suggest a agent, this agent responsible for later setcopyright operation.only one proposal is permitted in a period(86400 blocks),when last proposal expired, bp can proposal new one.
   ```
