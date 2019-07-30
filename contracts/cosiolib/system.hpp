@@ -104,7 +104,7 @@ namespace cosio {
     
     inline void require_auth(const name& who) {
         return who.is_contract()?
-            cosio_assert( who == get_contract_name() || who == get_contract_caller(), "no authority of contract: " + who.string()):
+            cosio_assert(who == get_contract_caller(), "no authority of contract: " + who.string()):
             ::require_auth((char*)who.string().c_str(), (int)who.string().size());
     }
 
