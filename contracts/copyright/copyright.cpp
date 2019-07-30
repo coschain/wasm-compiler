@@ -39,6 +39,9 @@ public:
 	}
 
     void proposal(const std::string& user) {
+        // make sure user exist
+        auto b = cosio::get_user_balance(user);
+
         auto caller = cosio::get_contract_caller();
         auto producers = cosio::block_producers();
 
@@ -109,6 +112,7 @@ public:
         // setadmin if most bp agree
         if(v.agree > limit) {
             setadmin(v.admin);
+            cosio::print("copyright admin proposal has been executed, reset proposal. \n");
             box.remove();
         }
     }

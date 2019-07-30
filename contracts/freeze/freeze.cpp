@@ -35,6 +35,11 @@ public:
     void proposalfreeze(const std::vector<std::string>& accounts, int32_t op ,const std::vector<std::string>& memos) {
         cosio::cosio_assert(op==1 || op==0, std::string("op invalid freeze=1 or unfreeze=0"));
 
+        for(int i=0; i<accounts.size();i++){
+            // make sure user exist
+            auto b = cosio::get_user_balance(accounts[i]);
+        }
+
         auto caller = cosio::get_contract_caller();
         auto producers = cosio::block_producers();
 
@@ -106,6 +111,7 @@ public:
         // setafreeze if most bp agree
         if(v.agree > limit) {
             cosio::update_freeze(v.accounts,v.op,v.memos);
+            cosio::print_f("freeze proposal % has been executed, then remove it from contract storage. \n",id);
             // this proposal is done, remove it
             freezetable.remove(id);
         }
