@@ -103,9 +103,11 @@ namespace cosio {
     }
     
     inline void require_auth(const name& who) {
-        return who.is_contract()?
-            cosio_assert(who == get_contract_caller(), "no authority of contract: " + who.string()):
+        if (is_contract_called_by_user()) {
             ::require_auth((char*)who.string().c_str(), (int)who.string().size());
+        } else {
+            cosio_assert(who == get_contract_caller(), "no authority of contract: " + who.string());
+        }
     }
 
     inline void transfer_to_user(const name& to, coin_amount amount, const std::string& memo) {
