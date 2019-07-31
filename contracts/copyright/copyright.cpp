@@ -40,7 +40,7 @@ public:
 
     void proposal(const std::string& user) {
         // make sure user exist
-        auto b = cosio::get_user_balance(user);
+        cosio::cosio_assert(cosio::user_exist(user), std::string("proposal user not exist:")+user);
 
         auto caller = cosio::get_contract_caller();
         auto producers = cosio::block_producers();

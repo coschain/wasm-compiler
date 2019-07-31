@@ -88,6 +88,11 @@ namespace cosio {
         cosio_assert(!user.is_contract(), "invalid account name: " + user.string());
         return ::get_user_balance((char*)user.string().c_str(), (int)user.string().size());
     }
+
+    inline bool user_exist(const name& user) {
+        cosio_assert(!user.is_contract(), "invalid account name: " + user.string());
+        return ::user_exist((char*)user.string().c_str(), (int)user.string().size()) == 1;
+    }
     
     inline coin_amount get_balance(const name& who) {
         return who.is_contract()? get_contract_balance(who) : get_user_balance(who);

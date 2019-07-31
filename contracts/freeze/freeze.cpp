@@ -37,7 +37,7 @@ public:
 
         for(int i=0; i<accounts.size();i++){
             // make sure user exist
-            auto b = cosio::get_user_balance(accounts[i]);
+            cosio::cosio_assert(cosio::user_exist(accounts[i]),std::string("proposal user not exist:")+accounts[i]);
         }
 
         auto caller = cosio::get_contract_caller();

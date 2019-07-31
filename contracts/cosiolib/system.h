@@ -81,6 +81,14 @@ extern "C" {
      @return the balance of account @p name, in coins. If the account doesn't exist, abort execution.
      */
     unsigned long long get_user_balance(char* name, int length);
+
+    /**
+     Check if account exist
+     @param[in] name the account name string.
+     @param[in] length the length of @p name.
+     @return int value present account exist, 1 means exist, 0 means not exist.
+     */
+    int user_exist(char* name, int length);
     
     /**
      Get balance of specific contract.
