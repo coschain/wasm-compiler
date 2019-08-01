@@ -30,8 +30,8 @@ namespace cosio {
         return std::string(b.begin(), b.end());
     }
     
-    inline std::string current_witness() {
-        return _read_string(::current_witness);
+    inline std::string current_block_producer() {
+        return _read_string(::current_block_producer);
     }
     
     inline std::vector<std::string> block_producers() {

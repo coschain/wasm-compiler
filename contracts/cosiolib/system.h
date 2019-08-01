@@ -17,13 +17,13 @@ extern "C" {
     unsigned long long current_timestamp();
     
     /**
-     Get current witness account name.
+     Get current block producer name.
      @param[in,out] buffer the buffer to which the account name string is stored.
      @param[in] size the capacity of @p buffer, in bytes.
      @return if @p size is positive, return the number of bytes written to @p buffer.
      if @p size is zero or negative, return the length of the account name in bytes without changing @p buffer.
      */
-    int current_witness(char* buffer, int size);
+    int current_block_producer(char* buffer, int size);
     
     /**
      Get current block producers as a single string joined by producer account names with delimiter space(ASCII=32).
