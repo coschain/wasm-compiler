@@ -69,6 +69,7 @@ public:
                     voter v;
                     v.name = producers[i];
                     v.haveVoted = false;
+                    vt.producers.clear();
                     vt.producers.push_back(v);
                 }
         });
