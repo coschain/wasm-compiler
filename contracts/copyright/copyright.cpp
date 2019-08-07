@@ -65,11 +65,11 @@ public:
                 vt.admin = user;
                 vt.agree = 0;
                 vt.begin_block = num;
+                vt.producers.clear();
                 for(int i=0;i<producers.size();i++) {
                     voter v;
                     v.name = producers[i];
                     v.haveVoted = false;
-                    vt.producers.clear();
                     vt.producers.push_back(v);
                 }
         });
