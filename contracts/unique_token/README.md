@@ -22,6 +22,7 @@ This manual was provided for users who working on COS blockchain contract develo
 
 Combining the needs of Social industry, we reviewed a number of existing non-homogeneous digital asset standards and defined COS unique token to be the one to standardize all non-homogeneous digital assets that published and circulated on the COS chain.  
 
+**unique token interface**
 ```c++
 /**
  * @brief the token contract class
@@ -52,6 +53,22 @@ struct uniqueToken : public cosio::contract {
      */
     void transfer(cosio::name from,cosio::name to, uint64_t id);
 }
+```
+
+**query interface**
+Developer can use rpc function GetTableContentRequest to query unique token information, such as token's owner, owner's token amount etc.
+```c++
+// table owner_name contract_name table_name field_name field_begin count(max value:100) [reverse]
+req := &grpcpb.GetTableContentRequest{
+		Owner:     owner,         // owner of contract (string)
+		Contract: contract,       // contranct name (string)
+		Table:     table,         // contract table name (string)
+		Field:     field,         // field of table (string)
+		Begin:     begin,         // begin value of query (string)
+		Count:     uint32(count), // query count (uint32)
+		Reverse:	reverse,        // whether reverse order (bool)
+	}
+  resp, err := rpc.QueryTableContent(context.Background(), req)
 ```
 
 ## Token Detail
