@@ -56,6 +56,7 @@ struct uniqueToken : public cosio::contract {
 ```
 
 **query interface**
+
 Developer can use rpc function GetTableContentRequest to query unique token information, such as token's owner, owner's token amount etc.
 ```c++
 // table owner_name contract_name table_name field_name field_begin count(max value:100) [reverse]
@@ -66,7 +67,7 @@ req := &grpcpb.GetTableContentRequest{
 		Field:     field,         // field of table (string)
 		Begin:     begin,         // begin value of query (string)
 		Count:     uint32(count), // query count (uint32)
-		Reverse:	reverse,        // whether reverse order (bool)
+		Reverse:	reverse,  // whether reverse order (bool)
 	}
   resp, err := rpc.QueryTableContent(context.Background(), req)
 ```
