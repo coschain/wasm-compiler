@@ -22,6 +22,38 @@ This manual was provided for users who working on COS blockchain contract develo
 
 Combining the needs of Social industry, we reviewed a number of existing non-homogeneous digital asset standards and defined COS unique token to be the one to standardize all non-homogeneous digital assets that published and circulated on the COS chain.  
 
+```c++
+/**
+ * @brief the token contract class
+ */
+struct uniqueToken : public cosio::contract {
+
+    /**
+     * @brief init contract table.
+     *
+     * @param name          name of the token, e.g. "Native token of Contentos".
+     * @param symbol        symbol name of the token, e.g. "COS".
+     */
+    void init(string name,string symbol);
+    
+    /**
+     * @brief contract method to create a unique token.
+     *
+     * @param data          token's context data
+     */
+    void create(string data);
+    
+    /**
+     * @brief contract method to transfer tokens.
+     *
+     * @param from      the account who sends tokens.
+     * @param to        the account who receives tokens.
+     * @param id        token id.
+     */
+    void transfer(cosio::name from,cosio::name to, uint64_t id);
+}
+```
+
 ## Token Detail
 
 **Unique Token Identifiers**
