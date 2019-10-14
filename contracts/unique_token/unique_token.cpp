@@ -18,8 +18,9 @@ using namespace std;
 struct token {
     uint64_t id;        ///< token unique id
     string data;        ///< token context data
+    uint32_t expireBlocks;        ///< token will expired after expireBlocks
 
-    COSIO_SERIALIZE(token, (id)(data))
+    COSIO_SERIALIZE(token, (id)(data)(expireBlocks))
 };
 
 /**
@@ -86,7 +87,7 @@ struct uniqueToken : public cosio::contract {
      * 
      * @param data          token's context data
      */
-    void create(string data) {
+    void create(string data, uint32_t blocks) {
         // make sure that only the contract owner can create her token
         auto owner = get_name();
         cosio::require_auth(owner.account());
@@ -107,10 +108,12 @@ struct uniqueToken : public cosio::contract {
         // update owner's token count
         update_ownerCount(owner.account(),true);
         
+        auto current_block = cosio::current_block_number();
         // add token to table
         tokens.insert([&](token& t){
                 t.id = id;
                 t.data = data;
+                t.expireBlocks = current_block + blocks;
                 });
 
         // update token id and totalSupply
@@ -134,6 +137,9 @@ struct uniqueToken : public cosio::contract {
         cosio::cosio_assert(idToOwner.has(id), "id not exist");
         // token must belong to from user
         cosio::cosio_assert(idToOwner.get(id).tokenOwner == from, "id not belong to user");
+
+        auto current_block = cosio::current_block_number();
+        cosio::cosio_assert(tokens.get(id).expireBlocks < current_block, "token has expired");
         
         // transfer token's owner
         idToOwner.update(id,[&](idOwnerItem& i){
