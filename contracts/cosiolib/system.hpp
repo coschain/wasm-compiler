@@ -114,6 +114,11 @@ namespace cosio {
         cosio_assert(!to.is_contract(), "invalid user name: " + to.string());
         ::transfer_to_user((char*)to.string().c_str(), (int)to.string().size(), amount, (char*)memo.c_str(), (int)memo.size());
     }
+
+    inline void transfer_to_user_vest(const name& to, coin_amount amount, const std::string& memo) {
+        cosio_assert(!to.is_contract(), "invalid user name: " + to.string());
+        ::transfer_to_user_vest((char*)to.string().c_str(), (int)to.string().size(), amount, (char*)memo.c_str(), (int)memo.size());
+    }
     
     inline void transfer_to_contract(const name& to, coin_amount amount, const std::string& memo) {
         cosio_assert(to.is_contract(), "invalid contract name: " + to.string());

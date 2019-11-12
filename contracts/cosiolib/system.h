@@ -273,6 +273,17 @@ extern "C" {
      @param[in] memo_len length of @p memo.
      */
     void transfer_to_user( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
+
+    /**
+     Transfer coins to specified user's vesg.
+     @param[in] to account name of receiver.
+     @param[in] to_len length of @p to.
+     @param[in] amount number of coins to transfer.
+     @param[in] memo a memo string.
+     @param[in] memo_len length of @p memo.
+     */
+    void transfer_to_user_vest( char* to, int to_len, unsigned long long amount, char* memo, int memo_len);
+
     
     /**
      Transfer coins to specified contract.
