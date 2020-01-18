@@ -36,7 +36,7 @@ void agree(const std::string& id);
 void disagree(const std::string& id)
 ```
 
-- votes are not irrevocable, i.e. the voter has no chance to change her mind after voting.
+- votes are irrevocable, i.e. the voter has no chance to change her mind after voting.
 
 ### Approve a proposal
 
