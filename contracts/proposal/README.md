@@ -42,3 +42,33 @@ void disagree(const std::string& id)
 
 Once a proposal has collected "agree" votes from the majority (say 2/3+) of block producers, it gets approved. Contentos core team can then schedule an update to make it happen.  
 
+## Using wallet-cli
+
+Block producers can use the `wallet-cli` command line program to talk with this contract.
+
+*Remember to replace `your_name` with your account name in commands below.*
+
+**Make a proposal**
+
+```
+> call your_name contentos proposal propose [\"PROPOSAL_ID_0001\",\"blablabla\"]
+```
+
+**Query for a proposal**
+
+```
+> table contentos proposal proposals id \"PROPOSAL_ID_0001\" 1
+```
+
+**Agree with a proposal**
+
+```
+> call your_name contentos proposal agree [\"PROPOSAL_ID_0001\"]
+```
+
+**Disagree with a proposal**
+
+```
+> call your_name contentos proposal disagree [\"PROPOSAL_ID_0001\"]
+```
+
