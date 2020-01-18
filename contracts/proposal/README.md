@@ -6,7 +6,7 @@ A management contract for block producer proposals.
 
 Block producers are representing the common interest of Contentos community because they are fundamental players elected by majority of stakeholders. Block producers have the right and obligation to propose necessary improvements that help the system better meet the requirement of the community. This contract is a utility to manage block producer proposals and votes.
 
-##How it works
+## How it works
 
 Official account `contentos` will deploy this contract with the name `proposal`. Only top block producers who are really producing blocks have access to the contract. 
 
