@@ -40,12 +40,12 @@ struct token_record {
 
 // a token holding
 struct holding_record {
-    std::string token_id;               // a string token id = <symbol>:<token>, where <symbol> is the family symbol and <token> is the integer token id.
+    std::string global_id;              // a global token id = <symbol>:<token>, where <symbol> is the family symbol and <token> is the id of the token inside its family.
     std::string symbol;                 // the token family symbol
-    uint64_t token;                     // the token id
+    std::string token;                  // the token id inside its family, must be a 128-char long hex string, representing a 512-bit integer.
     cosio::name owner;                  // account name of the token owner
 
-    COSIO_SERIALIZE( holding_record, (token_id)(symbol)(token)(owner) )
+    COSIO_SERIALIZE( holding_record, (global_id)(symbol)(token)(owner) )
 };
 
 
@@ -154,9 +154,13 @@ public:
      * Only the token family issuer can call this method to mint new tokens inside the family.
      * 
      * @param symbol symbol of the family to which the new token belongs
+     * @param token_id the id of minted token. it must be a 128-char-long hex string.
      */
-    void mint(const std::string& symbol) {
+    void mint(const std::string& symbol, const std::string& token_id) {
         check_enabled_and_fee([](global_record& g){ return g.mint_fee; });
+
+        // validate the token id
+        check_token_id(token_id);
 
         // validate the token symbol 
         cosio::cosio_assert(tokens.has(symbol) , "symbol not found");
@@ -165,20 +169,22 @@ public:
         auto t = tokens.get(symbol);
         cosio::require_auth(t.issuer);
 
-        // create the new token
-        uint64_t new_token = t.minted_count + 1;
-        auto token_id = symbol + ":" + std::to_string(new_token);
+        // check if the token is already minted
+        auto gid = global_token_id(symbol, token_id);
+        cosio::cosio_assert(!holdings.has(gid) , "token already minted");
+
+        // create the token
+        holdings.insert([&](holding_record& r) {
+            r.global_id = gid;
+            r.symbol = symbol;
+            r.token = token_id;
+            r.owner = t.issuer;
+        });
         tokens.update(symbol, [&](token_record& r){
             r.minted_count++;
         });
         global.update([&](global_record& g){
             g.minted_count++;
-        });
-        holdings.insert([&](holding_record& r) {
-            r.token_id = token_id;
-            r.symbol = symbol;
-            r.token = new_token;
-            r.owner = t.issuer;
         });
     }
 
@@ -188,16 +194,18 @@ public:
      * Only the token owner can burn his/her tokens.
      * Note that when a token got burned, it's lost forever. There's no way to get it back.
      * 
-     * @param token_id the token id to be burned. A token id is a string of pattern <symbol>:<id>, e.g. "NFT:1"
+     * @param symbol the token family symbol
+     * @param token_id the token id to be burned. it must be a 128-char-long hex string.
      */
-    void burn(const std::string& token_id) {
+    void burn(const std::string& symbol, const std::string& token_id) {
         check_enabled_and_fee([](global_record& g){ return g.burn_fee; });
 
         // check the existence of the token
-        cosio::cosio_assert(holdings.has(token_id) , "token not found");
+        auto gid = global_token_id(symbol, token_id);
+        cosio::cosio_assert(holdings.has(gid) , "token not found");
 
         // the caller must be the owner
-        auto h = holdings.get(token_id);
+        auto h = holdings.get(gid);
         cosio::require_auth(h.owner);
 
         // remove the token
@@ -207,7 +215,7 @@ public:
         global.update([&](global_record& g){
             g.burned_count++;
         });
-        holdings.remove(token_id);
+        holdings.remove(gid);
     }
 
     /**
@@ -217,19 +225,21 @@ public:
      * 
      * @param from the sender account
      * @param to the receiver account
-     * @param token_id id of the token to be transferred. A token id is a string of pattern <symbol>:<id>, e.g. "NFT:1"
+     * @param symbol the token family symbol
+     * @param token_id id of the token to be transferred. it must be a 128-char-long hex string.
      */
-    void transfer(const cosio::name& from, const cosio::name& to, const std::string& token_id) {
+    void transfer(const cosio::name& from, const cosio::name& to, const std::string& symbol, const std::string& token_id) {
         check_enabled_and_fee([](global_record& g){ return g.transfer_fee; });
 
         // one cannot transfer tokens to herself.
         cosio::cosio_assert(from.string() != to.string(), "transfering to oneself not allowed");
 
         // the token must exist
-        cosio::cosio_assert(holdings.has(token_id) , "token not found");
+        auto gid = global_token_id(symbol, token_id);
+        cosio::cosio_assert(holdings.has(gid) , "token not found");
 
         // the caller must be the owner 
-        auto h = holdings.get(token_id);
+        auto h = holdings.get(gid);
         cosio::cosio_assert(from == h.owner, "wrong token owner");
         cosio::require_auth(h.owner);
 
@@ -243,7 +253,7 @@ public:
         global.update([&](global_record& g){
             g.transferred_count++;
         });
-        holdings.update(token_id, [&](holding_record& r){
+        holdings.update(gid, [&](holding_record& r){
             r.owner = to;
         });
     }
@@ -254,11 +264,24 @@ private:
         cosio::cosio_assert(g.enabled, "contract disabled");
         cosio::cosio_assert(cosio::get_contract_sender_value() >= get_fee_func(g), "inadequate fee");
     }
+
+    void check_token_id(const std::string& token_id) {
+        cosio::cosio_assert(
+            token_id.size() == 128 && std::all_of(token_id.begin(), token_id.end(), [](char c) { 
+                return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F');
+            }),
+            "invalid token id"
+        );
+    }
+
+    std::string global_token_id(const std::string& symbol, const std::string& token_id) {
+        return symbol + ":" + token_id;
+    }
     
 private:
     COSIO_DEFINE_NAMED_SINGLETON( global, "global", global_record );
     COSIO_DEFINE_TABLE( tokens, token_record, (symbol)(issuer) );
-    COSIO_DEFINE_TABLE( holdings, holding_record, (token_id)(owner) );
+    COSIO_DEFINE_TABLE( holdings, holding_record, (global_id)(owner) );
 };
 
 // contract methods declaration
