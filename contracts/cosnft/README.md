@@ -186,6 +186,23 @@ Note that when a call carries more COS tokens than required, the contract won't 
 
 ### Withdraw service fees
 
+To check your contract's balance,
+
+```
+> query Contract {\"owner\":\"<YOUR_ACCOUNT>\",\"cname\":\"cosnft\"}
+{
+    "id": {
+        "owner": "<YOUR_ACCOUNT>",
+        "cname": "cosnft"
+    },
+    "balance": "1.000000 COS",
+    "created_time": "...",
+    "abi": "...",
+    "code": "...",
+    ...
+}
+```
+
 The service manager can transfer balance of the contract to other Contentos account.
 
 ```
