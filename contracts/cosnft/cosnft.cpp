@@ -42,7 +42,7 @@ struct token_record {
 struct holding_record {
     std::string global_id;              // a global token id = <symbol>:<token>, where <symbol> is the family symbol and <token> is the id of the token inside its family.
     std::string symbol;                 // the token family symbol
-    std::string token;                  // the token id inside its family, must be a 128-char long hex string, representing a 512-bit integer.
+    std::string token;                  // the token id inside its family, which must consist of upper-cased letters or digits with max length of 128.
     cosio::name owner;                  // account name of the token owner
 
     COSIO_SERIALIZE( holding_record, (global_id)(symbol)(token)(owner) )
@@ -119,12 +119,8 @@ public:
         check_enabled_and_fee([](global_record& g){ return g.issue_fee; });
         
         // validate the symbol
-        cosio::cosio_assert(symbol.size() >= 3 && symbol.size() <= 8 &&
-            std::all_of(symbol.begin(), symbol.end(), [](char c) { 
-                return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z');
-            }),
-            "invalid symbol name"
-        );
+        check_string(symbol, 3, 8, "invalid symbol name");
+
         // validate the description and uri
         cosio::cosio_assert(desc.size() <= 128 , "description too long");
         cosio::cosio_assert(uri.size() <= 128 , "uri too long");
@@ -154,13 +150,13 @@ public:
      * Only the token family issuer can call this method to mint new tokens inside the family.
      * 
      * @param symbol symbol of the family to which the new token belongs
-     * @param token_id the id of minted token. it must be a 128-char-long hex string.
+     * @param token_id the id of minted token.
      */
     void mint(const std::string& symbol, const std::string& token_id) {
         check_enabled_and_fee([](global_record& g){ return g.mint_fee; });
 
         // validate the token id
-        check_token_id(token_id);
+        check_string(token_id, 1, 128, "invalid token id");
 
         // validate the token symbol 
         cosio::cosio_assert(tokens.has(symbol) , "symbol not found");
@@ -195,7 +191,7 @@ public:
      * Note that when a token got burned, it's lost forever. There's no way to get it back.
      * 
      * @param symbol the token family symbol
-     * @param token_id the token id to be burned. it must be a 128-char-long hex string.
+     * @param token_id the token id to be burned.
      */
     void burn(const std::string& symbol, const std::string& token_id) {
         check_enabled_and_fee([](global_record& g){ return g.burn_fee; });
@@ -226,7 +222,7 @@ public:
      * @param from the sender account
      * @param to the receiver account
      * @param symbol the token family symbol
-     * @param token_id id of the token to be transferred. it must be a 128-char-long hex string.
+     * @param token_id id of the token to be transferred.
      */
     void transfer(const cosio::name& from, const cosio::name& to, const std::string& symbol, const std::string& token_id) {
         check_enabled_and_fee([](global_record& g){ return g.transfer_fee; });
@@ -259,21 +255,24 @@ public:
     }
 
 private:
+    // check if the service is enabled and if the carried COS tokens are enough to pay the fee.
     void check_enabled_and_fee(std::function<uint64_t(global_record&)> get_fee_func) {
         auto g = global.get_or_default();
         cosio::cosio_assert(g.enabled, "contract disabled");
         cosio::cosio_assert(cosio::get_contract_sender_value() >= get_fee_func(g), "inadequate fee");
     }
 
-    void check_token_id(const std::string& token_id) {
+    // check if the given string contains allowed chars and its length is valid.
+    void check_string(const std::string& s, int min_size, int max_size, const std::string& msg) {
         cosio::cosio_assert(
-            token_id.size() == 128 && std::all_of(token_id.begin(), token_id.end(), [](char c) { 
-                return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F');
+            s.size() >= min_size && s.size() <= max_size && std::all_of(s.begin(), s.end(), [](char c) { 
+                return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z');
             }),
-            "invalid token id"
+            msg
         );
     }
 
+    // return a global unique id based on token family symbol and token id.
     std::string global_token_id(const std::string& symbol, const std::string& token_id) {
         return symbol + ":" + token_id;
     }
