@@ -107,7 +107,7 @@ Tokens owners can transfer their tokens to other Contentos accounts.
 > call <YOUR_ACCOUNT> contentos cosnft transfer [\"<YOUR_ACCOUNT>\",\"<OTHER_ACCOUNT>\",\"MYNFT\",\"TOKEN1\"]
 ```
 
-The above command sent `TOKEN1` of `MYNFT` family to a Contentos account `<OTHER_ACCOUNT>`. It calls the contract methods,
+The above command sent `TOKEN1` of `MYNFT` family to a Contentos account `<OTHER_ACCOUNT>`. It calls the contract method,
 
 ```C++
 void transfer(const cosio::name& from, const cosio::name& to, const std::string& symbol, const std::string& token_id);
@@ -118,7 +118,7 @@ void transfer(const cosio::name& from, const cosio::name& to, const std::string&
 - `symbol` is the family to which the token belongs.
 - `token_id` is the token ID.
 
-Once the transfer successfully completed, we can observe the ownership change of `MYNFT:TOKEN1`,
+Once the transfer completed, we can observe the ownership change of `MYNFT:TOKEN1`,
 
 ```
 > table contentos cosnft holdings global_id \"MYNFT:TOKEN1\" 1
@@ -162,17 +162,17 @@ Though it's recommended to use the public NFT service provided by `contentos` ac
 > call <YOUR_ACCOUNT> <YOUR_ACCOUNT> cosnft enable [true]
 ```
 
-The service is disabled by default. The service manager need to enable it first, otherwise, calls to `issue()`, `mint()`, `transfer()`, `burn()` will be refused.
+The service is disabled by default. The service manager need to enable it first, otherwise, calls to `issue()`, `mint()`, `burn()`, `transfer()` will be refused.
 
 ### Price your service
 
-The service is payable but it's totally free by default. The service manager can set prices for calls to `issue()`, `mint()`, `transfer()` and `burn()`. 
+The service is payable but it's totally free by default. The service manager can set prices for calls to `issue()`, `mint()`, `burn()` and `transfer()`. 
 
 ```
 call <YOUR_ACCOUNT> <YOUR_ACCOUNT> cosnft set_fee [1000000,2500000,34500000,10000000]
 ```
 
-The above command sets fees of `issue()`, `mint()`, `transfer()` and `burn()` to 1.0 COS, 2.5 COS, 3.45 COS and 10.0 COS respectively.
+The above command sets fees of `issue()`, `mint()`, `burn()` and `transfer()`. to 1.0 COS, 2.5 COS, 3.45 COS and 10.0 COS respectively.
 
 When your service is not free, calls to your contract must carry enough COS tokens to pay the fees. e.g. 
 
