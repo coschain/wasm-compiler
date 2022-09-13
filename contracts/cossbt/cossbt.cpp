@@ -4,9 +4,15 @@
 #include <cosiolib/contract.hpp>
 
 //
-// This contract implements management functionalities for Non-Fungible Tokens.
-// It should be deployed once, and everyone can then issue, mint and transfer their tokens by simply calling the contract.
+// This contract implements management functionalities for Soulbound Tokens.
+// It should be deployed once, and everyone can then issue, mint and burn their Soulbound Tokens by simply calling the contract.
 //
+
+// burn auths
+#define BURN_AUTH_ISSUER_ONLY               "issuer"
+#define BURN_AUTH_OWNER_ONLY                "owner"
+#define BURN_AUTH_ISSUER_AND_OWNER          "issuer_owner"
+#define BURN_AUTH_NONE                      "none"
 
 
 // global config & stats
@@ -15,13 +21,11 @@ struct global_record :public cosio::singleton_record {
     cosio::coin_amount issue_fee = 0;             // the fee of a new token issue
     cosio::coin_amount mint_fee = 0;              // the fee of minting a single token
     cosio::coin_amount burn_fee = 0;              // the fee of burning a single token
-    cosio::coin_amount transfer_fee = 0;          // the fee of transferring a single token
     uint64_t issued_count = 0;                    // total number of token families issued
     uint64_t minted_count = 0;                    // total number of minted tokens of all families
     uint64_t burned_count = 0;                    // total number of burned tokens of all families
-    uint64_t transferred_count = 0;               // total number of token transfers of all families
     
-    COSIO_SERIALIZE_DERIVED( global_record, cosio::singleton_record, (enabled)(issue_fee)(mint_fee)(burn_fee)(transfer_fee)(issued_count)(minted_count)(burned_count)(transferred_count) )
+    COSIO_SERIALIZE_DERIVED( global_record, cosio::singleton_record, (enabled)(issue_fee)(mint_fee)(burn_fee)(issued_count)(minted_count)(burned_count) )
 };
 
 // a token family
@@ -31,11 +35,10 @@ struct token_record {
     std::string uri;                    // the uri of the family, which is 128 bytes long at most. people should be able to get token metas using the uri and the integer token id.
     uint64_t minted_count = 0;          // total number of minted tokens
     uint64_t burned_count = 0;          // total number of burned tokens
-    uint64_t transferred_count = 0;     // total number of token transfers
     cosio::name issuer;                 // account name of the issuer
     uint64_t issued_at = 0;             // the issue timestamp
 
-    COSIO_SERIALIZE( token_record, (symbol)(desc)(uri)(minted_count)(burned_count)(transferred_count)(issuer)(issued_at) )
+    COSIO_SERIALIZE( token_record, (symbol)(desc)(uri)(minted_count)(burned_count)(issuer)(issued_at) )
 };
 
 // a token holding
@@ -44,13 +47,14 @@ struct holding_record {
     std::string symbol;                 // the token family symbol
     std::string token;                  // the token id inside its family, which must consist of upper-cased letters or digits with max length of 128.
     cosio::name owner;                  // account name of the token owner
+    std::string burn_auth;              // the burning auth of the token, must be one of BURN_AUTH_ISSUER_ONLY, BURN_AUTH_OWNER_ONLY, BURN_AUTH_ISSUER_AND_OWNER or BURN_AUTH_NONE.
 
-    COSIO_SERIALIZE( holding_record, (global_id)(symbol)(token)(owner) )
+    COSIO_SERIALIZE( holding_record, (global_id)(symbol)(token)(owner)(burn_auth) )
 };
 
 
 // the contract
-class cosnft: public cosio::contract {
+class cossbt: public cosio::contract {
 public:
     using cosio::contract::contract;
 
@@ -58,7 +62,7 @@ public:
      * @brief Enable or disable the contract.
      * 
      * Only the contract owner can call this method. Once the contract is disabled, subsequent calls to 
-     * issue(), mint(), burn() and transfer() will be refused.
+     * issue(), mint() and burn() will be refused.
      * 
      * @param b true: enable; false: disable
      */
@@ -74,22 +78,20 @@ public:
      * @brief Set the fees for operations.
      * 
      * Only the contract owner can call this method. The fees are zeros by default. After non-zero values are
-     * set by the contract owner, calls to issue(), mint(), burn() and transfer() must carry enough COS for the fees.
+     * set by the contract owner, calls to issue(), mint() and burn() must carry enough COS for the fees.
      * Note that a caller will not receive changes if he/she pays more COS than the required fee.
      * 
      * @param issue_fee minimal fee to issue a new token family
      * @param mint_fee minimal fee to mint a new token
      * @param burn_fee minimal fee to burn a token
-     * @param transfer_fee minimal fee to transfer a token
      */
-    void set_fee(cosio::coin_amount issue_fee, cosio::coin_amount mint_fee, cosio::coin_amount burn_fee, cosio::coin_amount transfer_fee) {
+    void set_fee(cosio::coin_amount issue_fee, cosio::coin_amount mint_fee, cosio::coin_amount burn_fee) {
         cosio::require_auth(get_name().account());
         global.get_or_create();
         global.update([&](global_record& g){
             g.issue_fee = issue_fee;
             g.mint_fee = mint_fee;
             g.burn_fee = burn_fee;
-            g.transfer_fee = transfer_fee;
         });
     }
 
@@ -136,7 +138,6 @@ public:
             r.issued_at = cosio::current_timestamp();
             r.minted_count = 0;
             r.burned_count = 0;
-            r.transferred_count = 0;
         });
         // update the global stats
         global.update([&](global_record& g){
@@ -151,8 +152,9 @@ public:
      * 
      * @param symbol symbol of the family to which the new token belongs
      * @param token_id the id of minted token.
+     * @param burn_auth the burn auth of the minted token, must be one of BURN_AUTH_ISSUER_ONLY, BURN_AUTH_OWNER_ONLY, BURN_AUTH_ISSUER_AND_OWNER or BURN_AUTH_NONE.
      */
-    void mint(const std::string& symbol, const std::string& token_id) {
+    void mint(const std::string& symbol, const std::string& token_id, const std::string& burn_auth, const cosio::name& receiver) {
         check_enabled_and_fee([](global_record& g){ return g.mint_fee; });
 
         // validate the token id
@@ -169,12 +171,19 @@ public:
         auto gid = global_token_id(symbol, token_id);
         cosio::cosio_assert(!holdings.has(gid) , "token already minted");
 
-        // create the token
+        // check burn auth string
+        check_burn_auth(burn_auth);
+
+        // check receiver existence
+        cosio::get_balance(receiver);
+
+        // create the token, and set the receiver as its owner
         holdings.insert([&](holding_record& r) {
             r.global_id = gid;
             r.symbol = symbol;
             r.token = token_id;
-            r.owner = t.issuer;
+            r.owner = receiver;
+            r.burn_auth = burn_auth;
         });
         tokens.update(symbol, [&](token_record& r){
             r.minted_count++;
@@ -187,7 +196,7 @@ public:
     /**
      * @brief Burn a token.
      * 
-     * Only the token owner can burn his/her tokens.
+     * Only the token owner and/or the token issuer can possibly burn an issued token depending on the token's burn_auth setting.
      * Note that when a token got burned, it's lost forever. There's no way to get it back.
      * 
      * @param symbol the token family symbol
@@ -200,9 +209,20 @@ public:
         auto gid = global_token_id(symbol, token_id);
         cosio::cosio_assert(holdings.has(gid) , "token not found");
 
-        // the caller must be the owner
+        // check burn auth
+        auto t = tokens.get(symbol);
         auto h = holdings.get(gid);
-        cosio::require_auth(h.owner);
+
+        cosio::cosio_assert(h.burn_auth != BURN_AUTH_NONE , "the token is not burnable");
+
+        if (h.burn_auth == BURN_AUTH_ISSUER_ONLY) {
+            cosio::require_auth(t.issuer);
+        } else if (h.burn_auth == BURN_AUTH_OWNER_ONLY) {
+            cosio::require_auth(h.owner);
+        } else if (h.burn_auth == BURN_AUTH_ISSUER_AND_OWNER) {
+            auto caller = cosio::get_contract_caller();
+            cosio::cosio_assert(caller == t.issuer || caller == h.owner, "the caller is not authorized to burn the token");
+        }
 
         // remove the token
         tokens.update(h.symbol, [&](token_record& r){
@@ -214,45 +234,6 @@ public:
         holdings.remove(gid);
     }
 
-    /**
-     * @brief Transfer a token.
-     * 
-     * Only the token owner can transfer his/her tokens to others.
-     * 
-     * @param from the sender account
-     * @param to the receiver account
-     * @param symbol the token family symbol
-     * @param token_id id of the token to be transferred.
-     */
-    void transfer(const cosio::name& from, const cosio::name& to, const std::string& symbol, const std::string& token_id) {
-        check_enabled_and_fee([](global_record& g){ return g.transfer_fee; });
-
-        // one cannot transfer tokens to herself.
-        cosio::cosio_assert(from.string() != to.string(), "transfering to oneself not allowed");
-
-        // the token must exist
-        auto gid = global_token_id(symbol, token_id);
-        cosio::cosio_assert(holdings.has(gid) , "token not found");
-
-        // the caller must be the owner 
-        auto h = holdings.get(gid);
-        cosio::cosio_assert(from == h.owner, "wrong token owner");
-        cosio::require_auth(h.owner);
-
-        // the receiver must be a valid account
-        cosio::cosio_assert(cosio::user_exist(to), "receiver account not found");
-
-        // transfer
-        tokens.update(h.symbol, [&](token_record& r){
-            r.transferred_count++;
-        });
-        global.update([&](global_record& g){
-            g.transferred_count++;
-        });
-        holdings.update(gid, [&](holding_record& r){
-            r.owner = to;
-        });
-    }
 
 private:
     // check if the service is enabled and if the carried COS tokens are enough to pay the fee.
@@ -276,6 +257,14 @@ private:
     std::string global_token_id(const std::string& symbol, const std::string& token_id) {
         return symbol + ":" + token_id;
     }
+
+    // check if the burn auth string is permitted.
+    void check_burn_auth(const std::string& burn_auth) {
+        cosio::cosio_assert(
+            burn_auth == BURN_AUTH_ISSUER_ONLY || burn_auth == BURN_AUTH_OWNER_ONLY || burn_auth == BURN_AUTH_ISSUER_AND_OWNER || burn_auth == BURN_AUTH_NONE,
+            "unknown burn auth: " + burn_auth
+        );
+    }
     
 private:
     COSIO_DEFINE_NAMED_SINGLETON( global, "global", global_record );
@@ -284,4 +273,4 @@ private:
 };
 
 // contract methods declaration
-COSIO_ABI( cosnft, (enable)(set_fee)(withdraw_fee)(issue)(mint)(burn)(transfer) )
+COSIO_ABI( cossbt, (enable)(set_fee)(withdraw_fee)(issue)(mint)(burn) )
