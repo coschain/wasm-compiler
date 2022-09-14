@@ -77,7 +77,7 @@ All tokens of the same family must have different token IDs. It's the caller's d
 To check the ownership of a specific token, query the `holdings` table,
 
 ```
-> table contentos cossft holdings global_id \"MYSBT:TOKEN1\" 1
+> table contentos cossbt holdings global_id \"MYSBT:TOKEN1\" 1
 queryTable detail: 
 
 [
